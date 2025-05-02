@@ -106,11 +106,14 @@ def assemble(line):
             return op_codes[op_code] + registers[rs] + registers[rt] + offset_bin
         else:
             rs, rt, offset = (
+                # removes commas
                 parts[1].replace(",", ""),
                 parts[2].replace(",", ""),
                 parts[3].replace(",", ""),
             )
+
             offset_bin = bin(int(offset)).replace("0b", "").zfill(16)
+            # make dictionary, key = string label, value = offset
             
             return op_codes[op_code] + registers[rs] + registers[rt] + offset_bin
 

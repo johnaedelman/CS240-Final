@@ -29,12 +29,13 @@ def setVariableRegister(varName, tRegister):
 # gets register based on variable name
 def getVariableRegister(varName):
     global vars
-    
+    # if key found in dictionary, return value
     if varName in vars:
         return vars[varName]
     else:
         return "ERROR"
-    
+
+
 def getAssignmentLinesImmediateValue(val, varName):
     global tRegister
     outputText = f"""addi $t{tRegister}, $zero, {val}
