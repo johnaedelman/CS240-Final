@@ -1,8 +1,7 @@
 import sys
 import os
 
-# hash tables!
-# keys on left and values on right
+# R-type functions have opcodes as 000000
 op_codes = {
     "add": "000000",
     "sub": "000000",
@@ -13,15 +12,38 @@ op_codes = {
     "sw": "101011",
     "beq": "000100",
     "bne": "000100",
+    # custom opcodes
+    "kill": "000000",
+    "revive": "000000",
+    "heal": "000000",
+    "roll": "111110",
+    "boost": "000000",
+    "hurt": "000000",
+    "hit": "000000",
+    "curse": "000000",
+    "charge": "000000",
+    "absorb": "111000"
 }
-# function codes (end)
+
+# at very end of R-type functions
 func_codes = {
     "add": "100000",
     "sub": "100010",
     "and": "100100",
     "or": "100101",
     "slt": "101010",
+    # custom function codes, leave out roll and absorb
+    #"kill": "101110",
+    #"revive": "111010", # generates list index out of range error?
+    #"heal": "111100",
+    #"boost": "100110",
+    #"hurt": "000100",
+    #"hit": "010000",
+    #"curse": "010110",
+    #"charge": "111001"
+    
 }
+
 # all registers
 registers = {
     "$zero": "00000",
@@ -57,7 +79,7 @@ def interpret_line(mips_f: str, bin_f: str):
     for instruction in input_file:
         # call assemble() and write to output file
         bin = assemble(instruction)
-        output_file.write(bin)
+        output_file.write(str(bin))
 
 # function to assemble
 def assemble(line):
@@ -73,23 +95,20 @@ def assemble(line):
     parts = line.split(" ")
     # first part is op code
     op_code = parts[0]
-    if op_code[len(op_code) - 1] == ":":  # If op code is a label
-        op_code = op_code.strip(":")
-        if op_code in labels:
-            labels[op_code].append(float(current_line - 1))  # Convert to float to mark it as the initial definition of the label
-        else:
-            labels[op_code] = [float(current_line - 1)]
-        return ""
+
 
     # checks if op_code is in function codes dictionary
     if op_code in func_codes:
         # assigns tuple to 3 variables
-        rd, rs, rt = (
-            # get rid of commas in registers 2, 3, and 4
-            parts[1].replace(",", ""),
-            parts[2].replace(",", ""),
-            parts[3].replace(",", ""),
-        )
+        if len(parts) >= 4:
+            rd, rs, rt = (
+                # get rid of commas in registers 2, 3, and 4
+                parts[1].replace(",", ""),
+                parts[2].replace(",", ""),
+                parts[3].replace(",", ""),
+            )
+        else: 
+            print("ERROR: not enough parts, index out of range")
         current_line += 1
         return (
             # accesses value at op-code dictionary
@@ -116,6 +135,7 @@ def assemble(line):
             # retrieves values based on keys, dict[key]
             current_line += 1
             return op_codes[op_code] + registers[rs] + registers[rt] + offset_bin + "\n"
+        
         else:
             rs, rt, offset = (
                 # removes commas
@@ -145,7 +165,8 @@ def handle_labels(bin_filename: str):
     lines = bin_file.read()
     bin_file.close()
     lines = lines.split("\n")
-    lines.remove("")
+    if "" in lines: # make sure string exists before removing it
+        lines.remove("")
 
     for label in labels:
         definition_line = 0
