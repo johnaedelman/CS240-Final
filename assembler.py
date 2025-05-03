@@ -1,7 +1,8 @@
 import sys
 import os
 
-# R-type functions have opcodes as 000000
+# hash tables!
+# keys on left and values on right
 op_codes = {
     "add": "000000",
     "sub": "000000",
@@ -12,7 +13,7 @@ op_codes = {
     "sw": "101011",
     "beq": "000100",
     "bne": "000100",
-    # custom opcodes
+    # custom op codes
     "kill": "000000",
     "revive": "000000",
     "heal": "000000",
@@ -25,7 +26,7 @@ op_codes = {
     "absorb": "111000"
 }
 
-# at very end of R-type functions
+# function codes (end)
 func_codes = {
     "add": "100000",
     "sub": "100010",
@@ -33,17 +34,9 @@ func_codes = {
     "or": "100101",
     "slt": "101010",
     # custom function codes, leave out roll and absorb
-    #"kill": "101110",
-    #"revive": "111010", # generates list index out of range error?
-    #"heal": "111100",
-    #"boost": "100110",
-    #"hurt": "000100",
-    #"hit": "010000",
-    #"curse": "010110",
-    #"charge": "111001"
-    
-}
+    "Kill": "101110" # this works, but adding other ones will error
 
+}
 # all registers
 registers = {
     "$zero": "00000",
@@ -79,7 +72,7 @@ def interpret_line(mips_f: str, bin_f: str):
     for instruction in input_file:
         # call assemble() and write to output file
         bin = assemble(instruction)
-        output_file.write(str(bin))
+        output_file.write(str(bin)) # cast to string
 
 # function to assemble
 def assemble(line):
@@ -100,15 +93,12 @@ def assemble(line):
     # checks if op_code is in function codes dictionary
     if op_code in func_codes:
         # assigns tuple to 3 variables
-        if len(parts) >= 4:
-            rd, rs, rt = (
-                # get rid of commas in registers 2, 3, and 4
-                parts[1].replace(",", ""),
-                parts[2].replace(",", ""),
-                parts[3].replace(",", ""),
-            )
-        else: 
-            print("ERROR: not enough parts, index out of range")
+        rd, rs, rt = (
+            # get rid of commas in registers 2, 3, and 4
+            parts[1].replace(",", ""),
+            parts[2].replace(",", ""),
+            parts[3].replace(",", ""),
+        )
         current_line += 1
         return (
             # accesses value at op-code dictionary
@@ -165,8 +155,9 @@ def handle_labels(bin_filename: str):
     lines = bin_file.read()
     bin_file.close()
     lines = lines.split("\n")
-    if "" in lines: # make sure string exists before removing it
-        lines.remove("")
+    if "" in lines:
+        lines.remove("") # if an empty string exists remove it
+
 
     for label in labels:
         definition_line = 0
