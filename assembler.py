@@ -6,9 +6,12 @@ import os
 op_codes = {
     "add": "000000",
     "sub": "000000",
-    "and:": "000000",
-    "or:": "000000",
+    "div": "000000",
+    "mfhi": "000000",
+    "and": "000000",
+    "or": "000000",
     "slt": "000000",
+    "addi": "001000",
     "lw": "100011",
     "sw": "101011",
     "beq": "000100",
@@ -27,19 +30,32 @@ op_codes = {
 }
 
 # function codes (end)
-func_codes = {
+# Standard = instructions w/form [6-bit opcode] [5-bit register x3] [shamt] [func code]
+standard_func_codes = {
     "add": "100000",
     "sub": "100010",
     "and": "100100",
     "or": "100101",
     "slt": "101010",
-    # custom function codes, leave out roll and absorb
-    "kill": "101110"  # this works, but adding other ones will error
-
 }
+
+# Instructions that have func codes at the end, but do not match the form of add or sub
+special_func_codes = {
+    "div": "011010",
+    "mfhi": "010000",
+    "kill": "101110"
+}
+
 # all registers
 registers = {
     "$zero": "00000",
+    "$v0": "00010",
+    "$v1": "00011",
+    "$a0": "00100",
+    "$a1": "00101",
+    "$a2": "00110",
+    "$a3": "00111",
+    "$t0": "01000",
     "$t1": "01001",
     "$t2": "01010",
     "$t3": "01011",
@@ -98,8 +114,25 @@ def assemble(line):
             labels[op_code] = [float(current_line - 1)]
         return ""
 
+    pre_instruction = ""  # For pseudo-instructions that require other operations in order to work
+
+    if op_code in ["li", "addi"]:
+        # Pre-instruction is sub $rd, $rd, $rd (zero register before loading in value)
+        parts[1] = parts[1].replace(",", "")
+        rd = parts[1]
+        pre_instruction = f"000000{registers[rd]}{registers[rd]}{registers[rd]}00000100010\n"
+        current_line += 1
+        if op_code == "li":
+            op_code = "addi"
+            parts.append(parts[2])
+            parts[2] = "$zero"
+        elif op_code == "move":
+            op_code = "add"
+            print(parts)
+
+    print(parts)
     # checks if op_code is in function codes dictionary
-    if op_code in func_codes:
+    if op_code in standard_func_codes:
         # assigns tuple to 3 variables
         rd, rs, rt = (
             # get rid of commas in registers 2, 3, and 4
@@ -120,10 +153,10 @@ def assemble(line):
             # adds shamt section
             + shift_logic_amount
             # adds function codes from op-code dictionary
-            + func_codes[op_code] + "\n"
+            + standard_func_codes[op_code] + "\n"
         )
     
-    if op_code in ["lw", "sw", "beq"]:
+    elif op_code in ["lw", "sw", "beq", "bne", "addi"]:
         if op_code == "lw" or op_code == "sw":
             rt = parts[1].replace(",", "")
             # splits into [0, $s2] assigns to each variable
@@ -133,8 +166,7 @@ def assemble(line):
             # retrieves values based on keys, dict[key]
             current_line += 1
             return op_codes[op_code] + registers[rs] + registers[rt] + offset_bin + "\n"
-        
-        else:
+        elif op_code == "beq" or op_code == "bne":
             rs, rt, offset = (
                 # removes commas
                 parts[1].replace(",", ""),
@@ -145,10 +177,30 @@ def assemble(line):
                 labels[offset].append(current_line)
             else:
                 labels[offset] = [current_line]
-            offset_bin = offset
             current_line += 1
-            return op_codes[op_code] + registers[rs] + registers[rt] + offset_bin + "\n"
-
+            return op_codes[op_code] + registers[rs] + registers[rt] + offset + "\n"
+        elif op_code == "addi":
+            rs, rt, immediate = (
+                # removes commas
+                parts[1].replace(",", ""),
+                parts[2].replace(",", ""),
+                parts[3].replace(",", ""),
+            )
+            immediate = bin(int(immediate)).replace("0b", "").zfill(16)
+            current_line += 1
+            return pre_instruction + op_codes[op_code] + registers[rt] + registers[rs] + immediate + "\n"
+    elif op_code in special_func_codes:
+        if op_code == "div":
+            rs, rt = (
+                parts[1].replace(",", ""),
+                parts[2].replace(",", "")
+            )
+            current_line += 1
+            return op_codes[op_code] + registers[rs] + registers[rt] + "0000000000" + special_func_codes[op_code] + "\n"
+        elif op_code == "mfhi":
+            rd = parts[1].replace(",", "")
+            current_line += 1
+            return op_codes[op_code] + "0000000000" + registers[rd] + "00000" + special_func_codes[op_code] + "\n"
 
 def to_signed_bin(num, num_bits):  # Converts an int to a signed two's complement binary number
     if num < 0:
@@ -160,6 +212,7 @@ def handle_labels(bin_filename: str):
     print(labels)
     bin_file = open(bin_filename, "r")
     lines = bin_file.read()
+    print(lines)
     bin_file.close()
     lines = lines.split("\n")
     if "" in lines:
