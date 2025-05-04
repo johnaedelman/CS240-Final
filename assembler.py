@@ -34,7 +34,7 @@ func_codes = {
     "or": "100101",
     "slt": "101010",
     # custom function codes, leave out roll and absorb
-    "Kill": "101110" # this works, but adding other ones will error
+    "kill": "101110"  # this works, but adding other ones will error
 
 }
 # all registers
@@ -71,6 +71,7 @@ def interpret_line(mips_f: str, bin_f: str):
     # reads input file line by line
     for instruction in input_file:
         # call assemble() and write to output file
+        print(instruction)
         bin = assemble(instruction)
         output_file.write(str(bin)) # cast to string
 
@@ -88,7 +89,14 @@ def assemble(line):
     parts = line.split(" ")
     # first part is op code
     op_code = parts[0]
-
+    if op_code[len(op_code) - 1] == ":":  # If op code is a label
+        op_code = op_code.strip(":")
+        if op_code in labels:
+            labels[op_code].append(
+                float(current_line - 1))  # Convert to float to mark it as the initial definition of the label
+        else:
+            labels[op_code] = [float(current_line - 1)]
+        return ""
 
     # checks if op_code is in function codes dictionary
     if op_code in func_codes:
@@ -137,9 +145,7 @@ def assemble(line):
                 labels[offset].append(current_line)
             else:
                 labels[offset] = [current_line]
-            offset_bin = offset  # Temporary, to be subbed back in for binary once later calcs are made
-            # offset_bin = bin(int(offset)).replace("0b", "").zfill(16)
-            # make dictionary, key = string label, value = offset
+            offset_bin = offset
             current_line += 1
             return op_codes[op_code] + registers[rs] + registers[rt] + offset_bin + "\n"
 
@@ -151,13 +157,13 @@ def to_signed_bin(num, num_bits):  # Converts an int to a signed two's complemen
 
 
 def handle_labels(bin_filename: str):
+    print(labels)
     bin_file = open(bin_filename, "r")
     lines = bin_file.read()
     bin_file.close()
     lines = lines.split("\n")
     if "" in lines:
         lines.remove("") # if an empty string exists remove it
-
 
     for label in labels:
         definition_line = 0
