@@ -1,3 +1,7 @@
+.data
+str1: .asciiz "Fizz"
+str2: .asciiz "Buzz"
+.text
 and $t1, $t2, $t3
 sub $t4, $t5, $t6
 beq $t1, $t2, LOOP
@@ -18,3 +22,4 @@ beq $at, $zero, LABEL
 LABEL:
 ble $t0, 99, LABEL
 syscall
+la $a0, str2

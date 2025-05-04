@@ -74,11 +74,15 @@ registers = {
     "$s5": "10101",
     "$s6": "10110",
     "$s7": "10111",
+    "$gp": "11100"
 }
 # for shamt field, r-type
 shift_logic_amount = "00000"
 current_line = 1
 labels = {}
+strings = {}
+reading_strings = False
+gp_offset = 0
 
 
 # param is a file name/path as a string
@@ -90,14 +94,13 @@ def interpret_line(mips_f: str, bin_f: str):
     # reads input file line by line
     for instruction in input_file:
         # call assemble() and write to output file
-        print(instruction)
         bin = assemble(instruction)
-        output_file.write(str(bin)) # cast to string
+        output_file.write(str(bin))  # cast to string
 
 
 # function to assemble
 def assemble(line):
-    global current_line
+    global current_line, reading_strings, gp_offset
     # splits line at #, and removes whitespaces before/after
     line = line.split("#")[0].strip()
 
@@ -109,7 +112,34 @@ def assemble(line):
     parts = line.split(" ")
     # first part is op code
     op_code = parts[0]
-    if op_code[len(op_code) - 1] == ":":  # If op code is a label
+
+    # Store defined strings in memory
+    if op_code == ".data":
+        reading_strings = True
+        return ""
+    elif op_code == ".text":
+        reading_strings = False
+        return ""
+    if reading_strings:
+        strings[op_code.strip(":")] = str(gp_offset)
+        string_instructions = ""
+        for char in parts[2].strip("\""):
+            string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{bin(ord(char)).replace("0b", "").zfill(16)}\n"
+            # Store the ASCII numerical representation of the char inside of $at
+            string_instructions += f"101011{registers["$gp"]}{registers["$at"]}{bin(int(gp_offset)).replace("0b", "").zfill(16)}\n"
+            # Store each individual char in a sequential area of memory
+            gp_offset += 1
+            current_line += 2
+            # Store each char in the global data area using sw
+        string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{"".zfill(16)}\n"
+        string_instructions += f"101011{registers["$gp"]}{registers["$at"]}{bin(int(gp_offset)).replace("0b", "").zfill(16)}\n"
+        # Null-terminate string
+        gp_offset += 1
+        current_line += 2
+        return string_instructions
+
+    # Keep track of labels
+    if op_code[len(op_code) - 1] == ":":
         op_code = op_code.strip(":")
         if op_code in labels:
             labels[op_code].append(
@@ -120,33 +150,34 @@ def assemble(line):
 
     pre_instruction = ""  # For pseudo-instructions that require other operations in order to work
 
-    if op_code in ["li", "move"]:
-        # Pre-instruction is sub $rd, $rd, $rd (zero register before loading in value)
-        parts[1] = parts[1].replace(",", "")
-        rd = parts[1]
-        pre_instruction = f"000000{registers[rd]}{registers[rd]}{registers[rd]}00000100010\n"
-        current_line += 1
-        if op_code == "li":
-            op_code = "addi"
-            parts.append(parts[2])
-            parts[2] = "$zero"
-            # zero original register, add immediate and $zero together into dest
-        elif op_code == "move":
+    # Converting pseudo-instructions into simple instructions
+    if op_code == "li":
+        op_code = "addi"
+        parts.append(parts[2])
+        parts[2] = "$zero"
+        # set original register to zero + immediate
+    elif op_code in ["move", "la"]:
+        if op_code == "move":
             op_code = "add"
             parts.append("$zero")
-            # zero original register, add source and zero into dest
+            # add source and zero into dest
+        elif op_code == "la":  # Loads the offset from $gp at which the string begins into rd
+            op_code = "addi"
+            parts[2] = strings[parts[2]]  # Immediate value of the memory offset from $gp
+            parts.append(parts[2])
+            parts[2] = "$zero"
+            # addi rd, $zero, memory offset
+
     elif op_code == "ble":
         rs, immediate = (
             parts[1].replace(",", ""),
             parts[2].replace(",", ""),
         )
-        pre_instruction += f"000000{registers["$at"]}{registers["$at"]}{registers["$at"]}00000100010\n"
-        # zero $at (assembler reserved register)
         pre_instruction += f"001000{registers["$zero"]}{registers["$at"]}{to_signed_bin(int(immediate), 16)}\n"
-        # load immediate value into it
+        # load immediate value into $at
         pre_instruction += f"000000{registers["$at"]}{registers[rs]}{registers["$at"]}00000101010\n"
         # slt $at, $at, rs ($at will be zero if rs is less than the provided immediate)
-        current_line += 3
+        current_line += 2
         op_code = "beq"
         parts[1] = "$at"
         parts[2] = "$zero"
@@ -235,7 +266,6 @@ def to_signed_bin(num, num_bits):  # Converts an int to a signed two's complemen
 
 
 def handle_labels(bin_filename: str):
-    print(labels)
     bin_file = open(bin_filename, "r")
     lines = bin_file.read()
     print(lines)
