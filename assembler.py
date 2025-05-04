@@ -31,7 +31,7 @@ op_codes = {
 }
 
 # function codes (end)
-# Standard = instructions w/form [6-bit opcode] [5-bit register x3] [shamt] [func code]
+# Standard = instructions w/form [6-bit opcode] [5-bit register]x3 [5-bit shamt] [6-bit func code]
 standard_func_codes = {
     "add": "100000",
     "sub": "100010",
@@ -44,8 +44,8 @@ standard_func_codes = {
 special_func_codes = {
     "div": "011010",
     "mfhi": "010000",
-    "kill": "101110",
-    "syscall": "001100"
+    "syscall": "001100",
+    "kill": "101110"
 }
 
 # all registers
