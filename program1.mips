@@ -1,20 +1,25 @@
-add $t1, $t2, $t3
+.data
+str1: .asciiz "Fizz"
+str2: .asciiz "Buzz"
+.text
+and $t1, $t2, $t3
 sub $t4, $t5, $t6
-beq $t4, $t7, LOOP
+beq $t1, $t2, LOOP
 beq $t1, $t2, EVIL_LABEL
-lw $s1, 0($s2)
+lw $t1, 0($t2)
 sw $s3, 4($s4)
 LOOP:
 beq $t1, $t2, LOOP
 EVIL_LABEL:
-
-kill $t0, $t0
-revive $t0, $t0
-heal $t0, $t0
-roll $t1, a, b
-boost $t0, $t0
-hurt $t0, $t0, a
-hit $t1, $t1
-curse $t0, $t0
-charge $t2
-absorb $t0, a
+addi $t0, $t1, 4
+div $s2, $s3
+mfhi $t0
+li $t0, 5
+beq $t4, $t7, LOOP
+li $at, 99
+slt $at, $at, $t0
+beq $at, $zero, LABEL
+LABEL:
+ble $t0, 99, LABEL
+syscall
+la $a0, str2
