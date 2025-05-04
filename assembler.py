@@ -11,6 +11,7 @@ op_codes = {
     "and": "000000",
     "or": "000000",
     "slt": "000000",
+    "syscall": "000000",
     "addi": "001000",
     "lw": "100011",
     "sw": "101011",
@@ -43,12 +44,14 @@ standard_func_codes = {
 special_func_codes = {
     "div": "011010",
     "mfhi": "010000",
-    "kill": "101110"
+    "kill": "101110",
+    "syscall": "001100"
 }
 
 # all registers
 registers = {
     "$zero": "00000",
+    "$at": "00001",
     "$v0": "00010",
     "$v1": "00011",
     "$a0": "00100",
@@ -91,6 +94,7 @@ def interpret_line(mips_f: str, bin_f: str):
         bin = assemble(instruction)
         output_file.write(str(bin)) # cast to string
 
+
 # function to assemble
 def assemble(line):
     global current_line
@@ -116,7 +120,7 @@ def assemble(line):
 
     pre_instruction = ""  # For pseudo-instructions that require other operations in order to work
 
-    if op_code in ["li", "addi"]:
+    if op_code in ["li", "move"]:
         # Pre-instruction is sub $rd, $rd, $rd (zero register before loading in value)
         parts[1] = parts[1].replace(",", "")
         rd = parts[1]
@@ -126,11 +130,28 @@ def assemble(line):
             op_code = "addi"
             parts.append(parts[2])
             parts[2] = "$zero"
+            # zero original register, add immediate and $zero together into dest
         elif op_code == "move":
             op_code = "add"
-            print(parts)
+            parts.append("$zero")
+            # zero original register, add source and zero into dest
+    elif op_code == "ble":
+        rs, immediate = (
+            parts[1].replace(",", ""),
+            parts[2].replace(",", ""),
+        )
+        pre_instruction += f"000000{registers["$at"]}{registers["$at"]}{registers["$at"]}00000100010\n"
+        # zero $at (assembler reserved register)
+        pre_instruction += f"001000{registers["$zero"]}{registers["$at"]}{to_signed_bin(int(immediate), 16)}\n"
+        # load immediate value into it
+        pre_instruction += f"000000{registers["$at"]}{registers[rs]}{registers["$at"]}00000101010\n"
+        # slt $at, $at, rs ($at will be zero if rs is less than the provided immediate)
+        current_line += 3
+        op_code = "beq"
+        parts[1] = "$at"
+        parts[2] = "$zero"
+        # Now it becomes a standard beq, except the checked condition is whether or not the provided register is less than the immediate
 
-    print(parts)
     # checks if op_code is in function codes dictionary
     if op_code in standard_func_codes:
         # assigns tuple to 3 variables
@@ -142,8 +163,9 @@ def assemble(line):
         )
         current_line += 1
         return (
+            pre_instruction
             # accesses value at op-code dictionary
-            op_codes[op_code]
+            + op_codes[op_code]
             # adds source register value from rs dictionary
             + registers[rs]
             # adds second source register value from rt dictionary
@@ -178,7 +200,7 @@ def assemble(line):
             else:
                 labels[offset] = [current_line]
             current_line += 1
-            return op_codes[op_code] + registers[rs] + registers[rt] + offset + "\n"
+            return pre_instruction + op_codes[op_code] + registers[rs] + registers[rt] + offset + "\n"
         elif op_code == "addi":
             rs, rt, immediate = (
                 # removes commas
@@ -186,7 +208,7 @@ def assemble(line):
                 parts[2].replace(",", ""),
                 parts[3].replace(",", ""),
             )
-            immediate = bin(int(immediate)).replace("0b", "").zfill(16)
+            immediate = to_signed_bin(int(immediate), 16)
             current_line += 1
             return pre_instruction + op_codes[op_code] + registers[rt] + registers[rs] + immediate + "\n"
     elif op_code in special_func_codes:
@@ -201,6 +223,10 @@ def assemble(line):
             rd = parts[1].replace(",", "")
             current_line += 1
             return op_codes[op_code] + "0000000000" + registers[rd] + "00000" + special_func_codes[op_code] + "\n"
+        elif op_code == "syscall":
+            current_line += 1
+            return op_codes[op_code] + "00000000000000000000" + special_func_codes[op_code] + "\n"
+
 
 def to_signed_bin(num, num_bits):  # Converts an int to a signed two's complement binary number
     if num < 0:

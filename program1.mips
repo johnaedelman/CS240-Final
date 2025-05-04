@@ -12,4 +12,9 @@ div $s2, $s3
 mfhi $t0
 li $t0, 5
 beq $t4, $t7, LOOP
-move $a0, $t0
+li $at, 99
+slt $at, $at, $t0
+beq $at, $zero, LABEL
+LABEL:
+ble $t0, 99, LABEL
+syscall
