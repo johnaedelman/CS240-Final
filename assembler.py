@@ -12,6 +12,7 @@ op_codes = {
     "slt": "000000",
     "syscall": "000000",
     "addi": "001000",
+    "j": "000010",
     "lw": "100011",
     "sw": "101011",
     "beq": "000100",
@@ -215,7 +216,7 @@ def assemble(line):
             + standard_func_codes[op_code] + "\n"
         )
     
-    elif op_code in ["lw", "sw", "beq", "bne", "addi"]:
+    elif op_code in ["lw", "sw", "beq", "bne", "addi", "j"]:
         if op_code == "lw" or op_code == "sw":
             rt = parts[1].replace(",", "")
             # splits into [0, $s2] assigns to each variable
@@ -248,6 +249,15 @@ def assemble(line):
             immediate = to_signed_bin(int(immediate), 16)
             current_line += 1
             return pre_instruction + op_codes[op_code] + registers[rt] + registers[rs] + immediate + "\n"
+        elif op_code == "j":
+            offset = parts[1]
+            if offset in labels:
+                labels[offset].append(current_line)
+            else:
+                labels[offset] = [current_line]
+            current_line += 1
+            return op_codes[op_code] + offset + "\n"
+
     elif op_code in special_func_codes:
         if op_code == "div":
             rs, rt = (
@@ -289,7 +299,11 @@ def handle_labels(bin_filename: str):
                 break
         for val in labels[label]:
             offset = definition_line - val  # How many lines to jump away from the current line
-            lines[val - 1] = lines[val - 1].replace(label, to_signed_bin(offset, 16))  # Replace the placeholder label name with the correct offset
+            if lines[val - 1][0:6] == op_codes["j"]:
+                n_bits = 26
+            else:
+                n_bits = 16
+            lines[val - 1] = lines[val - 1].replace(label, to_signed_bin(offset, n_bits))  # Replace the placeholder label name with the correct offset
     bin_file = open(bin_filename, "w")
     bin_file.writelines(lines)
     bin_file.close()
