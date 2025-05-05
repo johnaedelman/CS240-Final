@@ -1,7 +1,6 @@
 import sys
 import os
 
-# hash tables!
 # keys on left and values on right
 op_codes = {
     "add": "000000",
@@ -23,7 +22,7 @@ op_codes = {
     "heal": "000000",
     "roll": "111110",
     "boost": "000000",
-    "hurt": "000000",
+    "hurt": "110111",
     "hit": "000000",
     "curse": "000000",
     "charge": "000000",
@@ -45,7 +44,14 @@ special_func_codes = {
     "div": "011010",
     "mfhi": "010000",
     "syscall": "001100",
-    "kill": "101110"
+    # custom function codes
+    "kill": "101110",
+    "revive": "111010",
+    "heal": "111100",
+    "boost": "100110",
+    "hit": "011100",
+    "curse": "010110",
+    "charge": "111001"
 }
 
 # all registers
@@ -292,7 +298,7 @@ def handle_labels(bin_filename: str):
 # python script running directly?
 if __name__ == "__main__":
     # open and interpret mips file
-    mips_file = "program1.mips"
-    binary_file = "mips_to_bin.txt"
+    mips_file = "custom_instructions.mips"    # "program1.mips"
+    binary_file = "assembler_output.txt"      # "mips_to_bin.txt"
     interpret_line(mips_file, binary_file)
     handle_labels(binary_file)
