@@ -1,27 +1,61 @@
+.data
+string3: .asciiz "\n"
+string2: .asciiz "Buzz\n"
+string1: .asciiz "Fizz\n"
+string0: .asciiz "FizzBuzz\n"
+.text
 main:
-addi $t0, $zero, 268468220
-addi $t1, $zero, 268468216
-addi $t2, $zero, 268468212
-addi $t3, $zero, 7
-sw $t3, 0($t0)
-addi $t3, $zero, 18
-sw $t3, 0($t1)
-lw $t3, 0($t0)
-sw $t3, 0($t2)
-addi $t3, $zero, 19
-sw $t3, 0($t1)
-addi $t3, $zero, 13
-sw $t3, 0($t2)
-addi $t3, $zero, 268468208
-addi $t4, $zero, 1
-sw $t4, 0($t3)
-loop1:
-addi $t4, $zero, 1
-sw $t4, 0($t0)
-addi $t4, $zero, 2
-sw $t4, 0($t1)
-endloop1:
-lw $t4, 0($t3)
-addi $t4, $t4, 1
-sw $t4, 0($t3)
-ble $t4, 99, loop1
+li $t0, 268468220
+li $t1, 1
+sw $t1, 0($t0)
+loop0:
+li $t1, 5
+lw $t2, 0($t0)
+div $t2, $t1
+mfhi $t1
+li $t2, 0
+bne $t1, $t2, skip0
+li $t1, 3
+lw $t2, 0($t0)
+div $t2, $t1
+mfhi $t1
+li $t2, 0
+bne $t1, $t2, skip0
+li $v0, 4
+la $a0, string0
+syscall
+j endloop0
+skip0:
+li $t1, 3
+lw $t2, 0($t0)
+div $t2, $t1
+mfhi $t1
+li $t2, 0
+bne $t1, $t2, skip1
+li $v0, 4
+la $a0, string1
+syscall
+j endloop0
+skip1:
+li $t1, 5
+lw $t2, 0($t0)
+div $t2, $t1
+mfhi $t1
+li $t2, 0
+bne $t1, $t2, skip2
+li $v0, 4
+la $a0, string2
+syscall
+skip2:
+li $v0, 1
+lw $t1, 0($t0)
+move $a0, $t1
+syscall
+li $v0, 4
+la $a0, string3
+syscall
+endloop0:
+lw $t1, 0($t0)
+addi $t1, $t1, 1
+sw $t1, 0($t0)
+ble $t1, 99, loop0
