@@ -1,0 +1,63 @@
+4 | .data
+4 | string1: .asciiz "FizzBuzz\n"
+6 | string2: .asciiz "Fizz\n"
+8 | string3: .asciiz "Buzz\n"
+A | string4: .asciiz "\n"
+4 | .text
+1 | MAIN:
+2 | li $t0, 0x10007FFC
+2 | li $t1, 1
+2 | sw $t1, 0($t0)
+2 | LOOP1:
+3 | li $t1, 5
+3 | li $t2, 0
+3 | div $t0, $t1
+3 | mfhi $t3
+3 | bne $t3, $t2, SKIP1
+3 | li $t1, 3
+3 | li $t2, 0
+3 | lw $t3, 0($t0)
+3 | div $t3, $t1
+3 | mfhi $t3
+3 | bne $t3, $t2, SKIP1
+4 | li $v0, 4
+4 | la $a0, string1
+4 | syscall
+5 | j ENDLOOP1
+3 | SKIP1:
+5 | li $t1, 3
+5 | li $t2, 0
+5 | lw $t3, 0($t0)
+5 | div $t3, $t1
+5 | mfhi $t3
+5 | bne $t3, $t2, SKIP2
+6 | li $v0, 4
+6 | la $a0, string2
+6 | syscall
+7 | j ENDLOOP1
+5 | SKIP2:
+7 | li $t1, 5
+7 | li $t2, 0
+7 | lw $t3, 0($t0)
+7 | div $t3, $t1
+7 | mfhi $t3
+7 | bne $t3, $t2, SKIP3
+8 | li $v0, 4
+8 | la $a0, string3
+8 | syscall
+9 | j ENDLOOP1
+7 | SKIP3:
+A | li $v0, 1
+A | lw $t1, 0($t0)
+A | move $a0, $t1
+A | syscall
+A | li $v0, 4
+A | la $a0, string4
+A | syscall
+2 | ENDLOOP1:
+2 | lw $t1, 0($t0)
+2 | addi $t1, $t1, 1
+2 | sw $t1, 0($t0)
+2 | ble $t1, 99, LOOP1
+B | li $v0, 10
+B | syscall
