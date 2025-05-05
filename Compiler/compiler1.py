@@ -3,8 +3,9 @@ memoryAddress = 0x10007FFC  # global pointer default value minus 4 (higher addre
 tRegister = 0
 # create empty dictionary called vars (hash table)
 vars = {}
-loop_stack = []  # Top of the stack will be the innermost loop which the function is currently executing
+loops = {}
 loop_count = 1  # Number of initialized for-loops
+loop_stack = []
 
 def initialize_variable(varName, value=None):
     # makes both global, not local (method) variables
@@ -38,6 +39,12 @@ def getVariableRegister(varName):
     else:
         return "ERROR"
 
+def add_to_output(line, op_lines: list[str], offset: int):
+    if isinstance(line, list):
+        for l in line:
+            op_lines.insert(len(op_lines) - offset, l)
+    else:
+        op_lines.insert(len(op_lines) - offset, line)
 
 def getAssignmentLinesImmediateValue(val, varName):
     global tRegister
@@ -54,67 +61,110 @@ def getAssignmentLinesVariable(varSource, varDest):
     registerDest = getVariableRegister(varDest)
     outputText += f"sw $t{tRegister}, 0({registerDest})"
     # tRegister += 1
-    return outputText
+    return outputText + "\n"
+
+
+def initialize_for_loop(assignment, condition, update):
+    assignment = assignment.split(" ")
+    output = []
+    output.append(initialize_variable(assignment[1], assignment[3]))
+    output.append(f"loop{loop_count}:\n")
+    loops[f"loop{loop_count}"] = 1
+    loop_stack.append(f"loop{loop_count}")
+    output.append(f"endloop{loop_count}:\n")
+    output.append(f"lw $t{tRegister}, 0({vars[assignment[1]]})\n")
+    update = update.strip("{").strip(")")
+    if update == "i++":
+        output.append(f"addi $t{tRegister}, $t{tRegister}, 1\n")
+    else:  # Supports for-loops with updates of the form i++ or i += a
+        update = update.split(" ")
+        output.append(f"addi $t{tRegister}, $t{tRegister}, {update[2]}\n")
+    output.append(f"sw $t{tRegister}, 0({vars[assignment[1]]})\n")
+    condition = condition.split(" ")
+    if condition[1] == "<=":
+        output.append(f"ble $t{tRegister}, {int(condition[2]) - 1}, loop{loop_count}\n")
+    elif condition[1] == "<":
+        output.append(f"ble $t{tRegister}, {condition[2]}, loop{loop_count}\n")
+    return output
+
+
+def perform_operation(operator):
+
+def check_condition(statement: str):
+    statement = statement.strip()
+    operators = ["==", "<=", "<"]
+    for op in operators:
+        if op in statement:
+            statement = statement.split(op)
+            print(statement)
+            left = statement[0].strip()
+            right = statement[1].strip()
+            if statement[0].strip
 
 
 def compile(c_file: str, mips_file: str):
     global loop_count
     global loop_stack
+    global loops
     # open and read c file
     f = open(c_file, "r")
     lines = f.readlines()
     output_lines = []
-    outputText = ""
+    end_offset = 0  # The offset from the end at which to insert new lines, used for loops and such
     for line in lines:
         line = line.strip()
-        current_line = len(output_lines)
-        print(current_line)
+        if loop_stack:
+            if line[len(line) - 1] == "{":
+                loops[loop_stack[0]] += 1
+            elif line[len(line) - 1] == "}":
+                loops[loop_stack[0]] -= 1
+
         if line.startswith("for"):
             parts = line[5:].split(";")
-            assignment = parts[0].split(" ")
-            outputText += initialize_variable(assignment[1], assignment[3])
-            outputText += f"loop{loop_count}:\n"
-            loop_stack.append(f"loop{loop_count}")
+            add_to_output(initialize_for_loop(parts[0].strip(), parts[1].strip(), parts[2].strip()), output_lines, end_offset)
+            end_offset += 5
             loop_count += 1
         elif "if" in line:
             _, expr = line.split("if ")
             expr = expr.replace("(","").replace(")","").replace("{","").replace("\n", "")
             expr = expr.split("&&")
-            output_lines.append(expr)
-            print(expr)
+            for e in expr:
+                check_condition(e)
 
         elif line.startswith("}"):
-            outputText += "AFTER:" + "\n"
+            if loop_stack and loops[loop_stack[0]] == 0:  # Matching open and closed curly braces (loop over)
+                loop_stack.pop(0)
+                end_offset -= 5
 
         # int declarations
         elif line.startswith("int "):
             if "(" in line and ")" in line:
                 _, label = line.split()
                 label = label.replace("(", "").replace(")", "").replace("{", "")
-                outputText += label + ":\n"
+                add_to_output(label + ":\n", output_lines, end_offset)
             else:
                 _, var = line.split()
                 var = var.strip(";")
-                outputText += initialize_variable(var)
+                add_to_output(initialize_variable(var), output_lines, end_offset)
 
         # assignments
         elif "=" in line:
             varName, _, val = line.split()
             val = val.strip(";")
-
             if val.isdigit():
                 # immediate value assignments
-                outputText += getAssignmentLinesImmediateValue(val, varName)
+                add_to_output(getAssignmentLinesImmediateValue(val, varName), output_lines, end_offset)
             else:
                 # variable assignments
-                outputText += getAssignmentLinesVariable(val, varName) + "\n"
+                add_to_output(getAssignmentLinesVariable(val, varName), output_lines, end_offset)
 
         else:
             pass
 
     # write output to output file
     outputFile = open(mips_file, "w")
-    outputFile.write(outputText)
+    outputFile.writelines(output_lines)
+    [print(line, end="") for line in output_lines]
 
 
 if __name__ == "__main__":

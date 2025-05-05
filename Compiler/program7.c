@@ -14,4 +14,5 @@ int main(){
     for (int i = 1; i <= 100; i++){
     a = 1;
     b = 2;
+    }
 }
