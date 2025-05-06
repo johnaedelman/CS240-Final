@@ -1,1 +1,108 @@
-roll $t4, 16
+addi $zero, $at, 92
+sw $at, 0($gp)
+addi $zero, $at, 110
+sw $at, 1($gp)
+addi $zero, $at, 0
+sw $at, 2($gp)
+addi $zero, $at, 66
+sw $at, 3($gp)
+addi $zero, $at, 117
+sw $at, 4($gp)
+addi $zero, $at, 122
+sw $at, 5($gp)
+addi $zero, $at, 122
+sw $at, 6($gp)
+addi $zero, $at, 92
+sw $at, 7($gp)
+addi $zero, $at, 110
+sw $at, 8($gp)
+addi $zero, $at, 0
+sw $at, 9($gp)
+addi $zero, $at, 70
+sw $at, 10($gp)
+addi $zero, $at, 105
+sw $at, 11($gp)
+addi $zero, $at, 122
+sw $at, 12($gp)
+addi $zero, $at, 122
+sw $at, 13($gp)
+addi $zero, $at, 92
+sw $at, 14($gp)
+addi $zero, $at, 110
+sw $at, 15($gp)
+addi $zero, $at, 0
+sw $at, 16($gp)
+addi $zero, $at, 70
+sw $at, 17($gp)
+addi $zero, $at, 105
+sw $at, 18($gp)
+addi $zero, $at, 122
+sw $at, 19($gp)
+addi $zero, $at, 122
+sw $at, 20($gp)
+addi $zero, $at, 66
+sw $at, 21($gp)
+addi $zero, $at, 117
+sw $at, 22($gp)
+addi $zero, $at, 122
+sw $at, 23($gp)
+addi $zero, $at, 122
+sw $at, 24($gp)
+addi $zero, $at, 92
+sw $at, 25($gp)
+addi $zero, $at, 110
+sw $at, 26($gp)
+addi $zero, $at, 0
+sw $at, 27($gp)
+addi $zero, $t0, 65532
+add $t0, $t0, $gp
+addi $zero, $t1, 1
+sw $t1, 0($t0)
+addi $zero, $t1, 5
+lw $t2, 0($t0)
+div $t2, $t1
+mfhi $t1
+addi $zero, $t2, 0
+beq $t1, $t2, 10
+addi $zero, $t1, 3
+lw $t2, 0($t0)
+div $t2, $t1
+mfhi $t1
+addi $zero, $t2, 0
+beq $t1, $t2, 4
+addi $zero, $v0, 4
+addi $zero, $a0, 17
+syscall $zero, $zero, $zero
+000010 26
+addi $zero, $t1, 3
+lw $t2, 0($t0)
+div $t2, $t1
+mfhi $t1
+addi $zero, $t2, 0
+beq $t1, $t2, 4
+addi $zero, $v0, 4
+addi $zero, $a0, 10
+syscall $zero, $zero, $zero
+000010 16
+addi $zero, $t1, 5
+lw $t2, 0($t0)
+div $t2, $t1
+mfhi $t1
+addi $zero, $t2, 0
+beq $t1, $t2, 3
+addi $zero, $v0, 4
+addi $zero, $a0, 3
+syscall $zero, $zero, $zero
+addi $zero, $v0, 1
+lw $t1, 0($t0)
+add $a0, $t1, $zero
+syscall $zero, $zero, $zero
+addi $zero, $v0, 4
+addi $zero, $a0, 0
+syscall $zero, $zero, $zero
+lw $t1, 0($t0)
+addi $t1, $t1, 1
+sw $t1, 0($t0)
+addi $zero, $at, 99
+slt $at, $at, $t1
+beq $at, $zero, 65488
