@@ -1,5 +1,5 @@
 # variable declaration is automatic
-memoryAddress = 0x10007FFC  # global pointer default value minus 4 (higher addresses will be used to store strings, lower for vars)
+memoryOffset = -4  # offset from global pointer (higher addresses will be used to store strings, lower for vars)
 tRegister = 0
 # create empty dictionary called vars (hash table)
 vars = {}
@@ -14,17 +14,18 @@ string_count = 0
 
 def initialize_variable(varName, value=None):
     # makes both global, not local (method) variables
-    global memoryAddress, tRegister
+    global memoryOffset, tRegister
     # sets register name to proper format
     tRegisterName = f"$t{tRegister}"
     # calls function ???
     setVariableRegister(varName, tRegisterName)
     # returns as appropriate string as addi with $zero (formatted)
     # put f in front of string, and use {} for variables
-    returnText = f"li {tRegisterName}, {memoryAddress}\n"
+    returnText = f"li {tRegisterName}, {memoryOffset}\n"
+    returnText += f"add {tRegisterName}, {tRegisterName}, $gp\n"
     # increase register value and memory address
     tRegister += 1
-    memoryAddress -= 4
+    memoryOffset -= 4
     if value is not None:
         returnText += getAssignmentLinesImmediateValue(value, varName)
     return returnText
@@ -116,7 +117,6 @@ def simplify_operands(expression):
             output.append(f"mfhi $t{tRegister}\n")
     right = right.split(" ")
     if len(right) == 1:  # Same deal
-        print(right[0])
         if right[0].isnumeric():
             output.append(f"li $t{tRegister + 1}, {right[0]}\n")
         else:
@@ -302,4 +302,4 @@ def compile(c_file: str, mips_file: str):
 
 
 if __name__ == "__main__":
-    compile("program7.c", "output7.asm")
+    compile("fizzbuzz.c", "output7.asm")

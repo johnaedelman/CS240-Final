@@ -20,7 +20,7 @@ addi $t0, $t0, 1
 li $v0, 11
 li $a0, 10
 syscall
-ble $t0, 99, LOOP
+ble $t0, $t1, LOOP
 li $v0, 10
 syscall
 
