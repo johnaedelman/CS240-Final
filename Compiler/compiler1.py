@@ -116,10 +116,21 @@ def simplify_operands(expression):
             output.append(f"mfhi $t{tRegister}\n")
     right = right.split(" ")
     if len(right) == 1:  # Same deal
+        print(right[0])
         if right[0].isnumeric():
             output.append(f"li $t{tRegister + 1}, {right[0]}\n")
         else:
             output.append(f"lw $t{tRegister + 1}, 0({vars[right[0]]})\n")
+    else:
+        if right[1] == "%":
+            if right[2].isnumeric():
+                output.append(f"li $t{tRegister + 1}, {left[2]}\n")
+            else:
+                output.append(f"lw $t{tRegister + 2}, 0({vars[left[2]]})\n")
+                output.append(f"add $t{tRegister + 1}, $zero, $t{tRegister + 2}\n")
+            output.append(f"lw $t{tRegister + 2}, 0({vars[left[0]]})\n")
+            output.append(f"div $t{tRegister + 2}, $t{tRegister + 1}\n")
+            output.append(f"mfhi $t{tRegister}\n")
     return output
 
 
@@ -167,19 +178,14 @@ def compile(c_file: str, mips_file: str):
             elif "}" in line:
                 loops[loop_stack[0]] -= 1
         if conditional_stack:
-            print(conditional_stack[0])
-            print(conditionals[conditional_stack[0]])
-            print(line)
-
             if "}" in line:
-                print("zing")
                 conditionals[conditional_stack[0]] -= 1
-
                 if conditionals[conditional_stack[0]] == 0:
-                    print("zam")
-                    print(conditional_stack)
+                    if conditionals[conditional_stack[0]] == "else":
+                        conditional_tree_count += 1
                     conditional_stack.pop(0)
                     end_offset -= 1
+
             elif "{" in line:
                 conditionals[conditional_stack[0]] += 1
 
@@ -188,9 +194,16 @@ def compile(c_file: str, mips_file: str):
             add_to_output(initialize_for_loop(parts[0].strip(), parts[1].strip(), parts[2].strip()), output_lines, end_offset)
             end_offset += 5
             loop_count += 1
+        elif line.strip().strip("{").strip("}").strip() == "else":
+            conditional_stack.insert(0, "else")
+            conditionals["else"] = 1
         elif "if" in line:
             if line.strip("}").strip().startswith("else"):
-                add_to_output(f"j endloop{loop_count - 1}\n", output_lines, end_offset + 1)  # Temp & only works if the ifs are within a loop, try to fix it
+                add_to_output(f"j endcond{conditional_tree_count - 1}\n", output_lines, end_offset + 1)  # Temp & only works if the ifs are within a loop, try to fix it
+            else:
+                add_to_output(f"endcond{conditional_tree_count}:\n", output_lines, end_offset)
+                conditional_tree_count += 1
+                end_offset += 1
             _, expr = line.split("if ")
             expr = expr.replace("(","").replace(")","").replace("{","").replace("\n", "")
             expr = expr.split("&&")
@@ -238,21 +251,47 @@ def compile(c_file: str, mips_file: str):
                 label = label.replace("(", "").replace(")", "").replace("{", "")
                 add_to_output(label + ":\n", output_lines, end_offset)
             else:
-                _, var = line.split()
+                line = line.split(" ")
+                _, var = line[0], line[1]
                 var = var.strip(";")
                 add_to_output(initialize_variable(var), output_lines, end_offset)
+                if len(line) == 4:  # Supports single-line declaration/assignment
+                    val = line[3]
+                    val = val.strip(";")
+                    if val in vars:
+                        add_to_output(getAssignmentLinesVariable(val, var), output_lines, end_offset)
+                    else:
+                        add_to_output(getAssignmentLinesImmediateValue(val, var), output_lines, end_offset)
 
         # assignments
         elif "=" in line:
-            varName, _, val = line.split()
+
+            varName, val = line.split("=")
             val = val.strip(";")
+            varName = varName.strip()
             if val.isdigit():
                 # immediate value assignments
                 add_to_output(getAssignmentLinesImmediateValue(val, varName), output_lines, end_offset)
             else:
                 # variable assignments
-                add_to_output(getAssignmentLinesVariable(val, varName), output_lines, end_offset)
+                if val in vars:
+                    add_to_output(getAssignmentLinesVariable(val, varName), output_lines, end_offset)
+                else:
+                    if "+" in val:
+                        val = val.split("+")
+                        val[1] = val[1].strip()
+                    elif "-" in val:
+                        val = val.split("-")
+                        val[1] = "-" + val[1].strip()
+                    val[0] = val[0].strip()
 
+                    output = [
+                    f"lw $t{tRegister}, 0({vars[val[0]]})\n"
+                    f"li $t{tRegister + 1}, {val[1]}\n"
+                    f"add $t{tRegister}, $t{tRegister}, $t{tRegister + 1}\n"
+                    f"sw $t{tRegister}, 0({vars[varName]})\n"
+                    ]
+                    add_to_output(output, output_lines, end_offset)
         else:
             pass
 
