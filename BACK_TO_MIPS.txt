@@ -22,7 +22,10 @@ addi $t0, $zero, 1
 addi $t1, $zero, 3
 addi $t2, $zero, 5
 div $t0, $t1
+label2:
 mfhi $t3
+label4:
+label5:
 beq $t3, $zero, 15
 div $t0, $t2
 mfhi $t3
@@ -34,10 +37,11 @@ addi $t0, $t0, 1
 addi $v0, $zero, 11
 addi $a0, $zero, 10
 syscall $zero, $zero, $zero
-addi $at, $zero, 99
+add $at, $zero, $t1
 slt $at, $at, $t0
-beq $at, $zero, 65520
+beq $at, $zero, -16
 addi $v0, $zero, 10
+label0:
 syscall $zero, $zero, $zero
 addi $v0, $zero, 4
 addi $a0, $zero, 0
@@ -51,8 +55,10 @@ syscall $zero, $zero, $zero
 addi $t0, $t0, 1
 addi $at, $zero, 100
 slt $at, $at, $t0
-beq $at, $zero, 65505
+beq $at, $zero, -31
 addi $v0, $zero, 10
+label1:
+label3:
 syscall $zero, $zero, $zero
 addi $v0, $zero, 4
 addi $a0, $zero, 5
@@ -63,6 +69,6 @@ syscall $zero, $zero, $zero
 addi $t0, $t0, 1
 addi $at, $zero, 100
 slt $at, $at, $t0
-beq $at, $zero, 65493
+beq $at, $zero, -43
 addi $v0, $zero, 10
 syscall $zero, $zero, $zero
