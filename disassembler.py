@@ -182,11 +182,11 @@ def bin_to_mips(line):
                 print(f"TEST: beq instructions: {op_code} {rs} {rt} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} (target address)")
 
             else: # I-type instructions for others like addi
-                rs, rt, offset = bit_string[6:11], bit_string[11:16], bit_string[16:32]
+                rt, rs, offset = bit_string[6:11], bit_string[11:16], bit_string[16:32]
                 mips.append(
                     f"{op_codes[op_code]} {registers[rs]}, {registers[rt]}, {int(offset, 2)}"
                 )
-                print(f"TEST: Other I-type instructions: {op_code} {rs} {rt} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} {int(offset, 2)}")
+                print(f"TEST: Other I-type instructions: {op_code} {rt} {rs} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} {int(offset, 2)}")
             
             bit_string = ""
     return mips
