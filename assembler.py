@@ -244,16 +244,24 @@ def assemble(line):
                 # removes commas
                 parts[1].replace(",", ""),
                 parts[2].replace(",", ""),
-                parts[3].replace(",", ""),
+                parts[3].replace(",", "")
             )
             immediate = to_signed_bin(int(immediate), 16)
             current_line += 1
             return pre_instruction + op_codes[op_code] + registers[rt] + registers[rs] + immediate + "\n"
         
-        # roll custom instruction
+        # roll custom instruction roll $t1, 16
         elif op_code == "roll":
-            rd = parts[1].replace(",", "")
+            # removes commas
+            rs, immediate = (
+                # removes commas
+                parts[1].replace(",", ""),
+                parts[2].replace(",", ""),
+            )
             current_line += 1
+            print(f"TESTING ROLL: {op_code} {rs} {immediate} --> {op_codes[op_code]} {registers[rs]} 00000 {to_signed_bin(int(immediate), 16)}")
+            return op_codes[op_code] + registers[rs] + "00000" + to_signed_bin(int(immediate), 16)
+            
 
         # for hurt and absorb
         elif op_code in ["hurt", "absorb"]:
@@ -334,7 +342,7 @@ def handle_labels(bin_filename: str):
 # python script running directly?
 if __name__ == "__main__":
     # open and interpret mips file
-    mips_file = "custom_instructions.mips"    # "program1.mips"
+    mips_file = "fizzbuzz.asm"    # "program1.mips"
     binary_file = "assembler_output.txt"      # "mips_to_bin.txt"
     interpret_line(mips_file, binary_file)
     handle_labels(binary_file)

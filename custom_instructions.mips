@@ -1,9 +1,10 @@
-absorb $t0, $t0, 5
-hurt $t0, $t0, 10
-charge $t2
 kill $t0, $t0
 revive $t0, $t0
 heal $t0, $t0
+roll $t1, 16
 boost $t0, $t0
-curse $t0, $t0
+hurt $t0, $t0, 10
 hit $t1, $t1
+curse $t0, $t0
+charge $t2
+absorb $t0, $t0, 5
