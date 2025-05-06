@@ -216,7 +216,7 @@ def assemble(line):
             + standard_func_codes[op_code] + "\n"
         )
     
-    elif op_code in ["lw", "sw", "beq", "bne", "addi", "j"]:
+    elif op_code in ["lw", "sw", "beq", "bne", "addi", "j", "hurt", "absorb", "roll"]:
         if op_code == "lw" or op_code == "sw":
             rt = parts[1].replace(",", "")
             # splits into [0, $s2] assigns to each variable
@@ -249,6 +249,24 @@ def assemble(line):
             immediate = to_signed_bin(int(immediate), 16)
             current_line += 1
             return pre_instruction + op_codes[op_code] + registers[rt] + registers[rs] + immediate + "\n"
+        
+        # roll custom instruction
+        elif op_code == "roll":
+            rd = parts[1].replace(",", "")
+            current_line += 1
+
+        # for hurt and absorb
+        elif op_code in ["hurt", "absorb"]:
+            rs, rt, immediate = (
+                # removes commas
+                parts[1].replace(",", ""),
+                parts[2].replace(",", ""),
+                parts[3].replace(",", ""),
+            )
+            immediate = to_signed_bin(int(immediate), 16)
+            current_line += 1
+            print(f"I-type custom instructions: {op_code} {rt} {rs} --> {op_codes[op_code]} {registers[rt]} {registers[rs]} {immediate}")
+            return op_codes[op_code] + registers[rt] + registers[rs] + immediate + "\n"
         elif op_code == "j":
             offset = parts[1]
             if offset in labels:
@@ -259,16 +277,20 @@ def assemble(line):
             return op_codes[op_code] + offset + "\n"
 
     elif op_code in special_func_codes:
-        if op_code == "div":
+        # div and custom 2 register instructions
+        if op_code in ["div", "kill", "revive", "heal", "boost", "curse", "hit"]:
             rs, rt = (
                 parts[1].replace(",", ""),
                 parts[2].replace(",", "")
             )
             current_line += 1
+            print(f"2 register instructions: {op_code} {rs} {rt} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} 00000 00000 {special_func_codes[op_code]}")
             return op_codes[op_code] + registers[rs] + registers[rt] + "0000000000" + special_func_codes[op_code] + "\n"
-        elif op_code == "mfhi":
+        # mfhi and charge
+        elif op_code in ["mfhi", "charge"]:
             rd = parts[1].replace(",", "")
             current_line += 1
+            print(f"1 register instructions: {op_code} {rd} --> {op_codes[op_code]} 00000 00000 {registers[rd]} 00000 {special_func_codes[op_code]}")
             return op_codes[op_code] + "0000000000" + registers[rd] + "00000" + special_func_codes[op_code] + "\n"
         elif op_code == "syscall":
             current_line += 1

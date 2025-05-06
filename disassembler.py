@@ -148,7 +148,7 @@ def bin_to_mips(line):
                     )
                     print(f"TEST: other R-type instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rd]} {registers[rs]} {registers[rt]} ")
 
-            # for absorb instruction (one register, one immediate)
+            # for roll/absorb instruction (one register, one immediate)
             elif op_code == "111110":
                 rs = bit_string[6:11]
                 offset = bit_string[16:32]
@@ -194,4 +194,4 @@ def bin_to_mips(line):
 # if __name__ == "__main__":
     # handle_lines(sys.argv[1])
 
-handle_lines("mips_to_bin.txt")
+handle_lines("custom_machine_code.txt")
