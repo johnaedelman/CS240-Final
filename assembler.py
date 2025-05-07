@@ -175,11 +175,14 @@ def assemble(line):
             # addi rd, $zero, memory offset
 
     elif op_code == "ble":
-        rs, immediate = (
+        rs, check = (
             parts[1].replace(",", ""),
-            parts[2].replace(",", ""),
+            parts[2].replace(",", ""),  # can be immediate or register
         )
-        pre_instruction += f"001000{registers["$zero"]}{registers["$at"]}{to_signed_bin(int(immediate), 16)}\n"
+        if not check.startswith("$"):
+            pre_instruction += f"001000{registers["$zero"]}{registers["$at"]}{to_signed_bin(int(check), 16)}\n"
+        else:
+            pre_instruction += f"000000{registers["$zero"]}{registers[check]}{registers["$at"]}00000100000\n"
         # load immediate value into $at
         pre_instruction += f"000000{registers["$at"]}{registers[rs]}{registers["$at"]}00000101010\n"
         # slt $at, $at, rs ($at will be zero if rs is less than the provided immediate)
@@ -188,7 +191,6 @@ def assemble(line):
         parts[1] = "$at"
         parts[2] = "$zero"
         # Now it becomes a standard beq, except the checked condition is whether or not the provided register is less than the immediate
-
     # checks if op_code is in function codes dictionary
     if op_code in standard_func_codes:
         # assigns tuple to 3 variables

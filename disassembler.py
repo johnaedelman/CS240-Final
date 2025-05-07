@@ -77,13 +77,13 @@ registers = {
 labels = {}
 
 # open and read binary file
-def handle_lines(bin_file: str):
+def handle_lines(bin_file: str, mips_file: str):
     input_file = open(bin_file, "r")
     # sort lines into list/ removes whitespace
     line = input_file.readlines()[0].strip()
     mips_instructions = bin_to_mips(line) # convert
     # write to output file
-    output_file = open("BACK_TO_MIPS.txt", "w")
+    output_file = open(mips_file, "w")
     for instruction in mips_instructions:
         output_file.write(instruction)
         output_file.write("\n")
@@ -204,4 +204,4 @@ def bin_to_mips(line):
 # if __name__ == "__main__":
     # handle_lines(sys.argv[1])
 
-handle_lines("assembler_output.txt")
+handle_lines("custom_machine_code.txt", "BACK_TO_MIPS.txt")
