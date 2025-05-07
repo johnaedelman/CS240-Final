@@ -296,10 +296,11 @@ def compile(c_file: str, mips_file: str):
             pass
 
     # write output to output file
-    outputFile = open(mips_file, "w")
-    outputFile.writelines(output_lines)
-    [print(line, end="") for line in output_lines]
+    output_file = open(mips_file, "w")
+    output_file.writelines(output_lines)
+    # [print(line, end="") for line in output_lines]
+    print(f"[COMPILER] Successfully compiled C input \"{c_file}\" into assembly output \"{mips_file}\".")
 
 
 if __name__ == "__main__":
-    compile("fizzbuzz.c", "output7.asm")
+    compile("fizzbuzz.c", "compiler_output.asm")
