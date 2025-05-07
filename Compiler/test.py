@@ -1,4 +1,3 @@
 
-bone = "%dbig chungus%d\n"
-
-print(bone.split("%d"))
+i = 1 << 16
+print(i - 15)

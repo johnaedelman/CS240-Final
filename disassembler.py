@@ -88,15 +88,24 @@ def handle_lines(bin_file: str, mips_file: str):
         output_file.write(instruction)
         output_file.write("\n")
 
+
+def bin_to_dec(offset: str, num_bits: int):
+    if offset.startswith("0"):
+        return int(offset, 2)
+    elif offset.startswith("1"):  # convert from two's complement signed
+        return int(offset, 2) - (1 << num_bits)
 # function for conversion
 def bin_to_mips(line):
     mips = []
+    line_count = 0
+    offsets = {}
     bit_string = ""
     # add every bit in line to bit_string
     for i in range(0, len(line)):
         bit_string += line[i]
         # if line has 32 bits, isolate opcode
         if len(bit_string) == 32:
+            line_count += 1
             op_code = bit_string[0:6]
             # if R-type, assign others accordingly
             if op_code == "000000":
@@ -179,29 +188,58 @@ def bin_to_mips(line):
             elif op_code == "000010":
                 offset = bit_string[6:]
                 mips.append(
-                    f"{op_code} {int(offset, 2)}"
+                    f"{op_codes[op_code]} {bin_to_dec(offset, 26)}"
                 )
+                offsets[line_count] = bin_to_dec(offset, 26)
                 print(f"TEST: jump instructions: {op_code} {offset} --> {op_codes[op_code]} (target address)")
 
             # check for beq and blt
-            elif op_code in ["000100"]:
+            elif op_code in ["000100", "000101"]:
                 rs, rt, offset = bit_string[6:11], bit_string[11:16], bit_string[16:32]
                 mips.append(
-                    f"{op_codes[op_code]} {registers[rs]}, {registers[rt]}, {int(offset, 2)}"
+                    f"{op_codes[op_code]} {registers[rs]}, {registers[rt]}, {bin_to_dec(offset, 16)}"
                 )
+                offsets[line_count] = bin_to_dec(offset, 16)
                 print(f"TEST: beq instructions: {op_code} {rs} {rt} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} (target address)")
 
             else: # I-type instructions for others like addi
                 rt, rs, offset = bit_string[6:11], bit_string[11:16], bit_string[16:32]
                 mips.append(
-                    f"{op_codes[op_code]} {registers[rs]}, {registers[rt]}, {int(offset, 2)}"
+                    f"{op_codes[op_code]} {registers[rs]}, {registers[rt]}, {bin_to_dec(offset, 16)}"
                 )
                 print(f"TEST: Other I-type instructions: {op_code} {rt} {rs} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} {int(offset, 2)}")
             
             bit_string = ""
+    print(offsets)
+    label_count = 0
+    insert_indices = {}
+    for o in offsets:
+        index = o + offsets[o]
+        if index not in insert_indices:
+            insert_indices[index] = [o - 1]
+        else:
+            insert_indices[index].append(o - 1)
+    insert_lines = list(insert_indices.keys())
+    insert_lines.sort()
+    print(insert_lines)
+    print(insert_indices)
+    for i in insert_lines:
+        for line in insert_indices[i]:
+            parts = mips[line].split(" ")
+            parts[len(parts) - 1] = f"label{label_count}"
+            output = ""
+            for part in parts:
+                output += part
+                output += " "
+            output = output.strip()
+            mips[line] = output
+        label_count += 1
+    label_count = 0
+    for i in insert_lines:
+        mips.insert(i + label_count, f"label{label_count}:")
+        label_count += 1
     return mips
 
-# if __name__ == "__main__":
-    # handle_lines(sys.argv[1])
 
-handle_lines("assembler_output.txt", "BACK_TO_MIPS.txt")
+handle_lines("disassembler_input.txt", "disassembler_output.asm")
+

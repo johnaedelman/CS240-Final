@@ -16,7 +16,7 @@ op_codes = {
     "lw": "100011",
     "sw": "101011",
     "beq": "000100",
-    "bne": "000100",
+    "bne": "000101",
     # custom op codes
     "kill": "000000",
     "revive": "000000",
@@ -129,18 +129,23 @@ def assemble(line):
     if reading_strings:
         strings[op_code.strip(":")] = str(gp_offset)
         string_instructions = ""
-        for char in parts[2].strip("\""):
-            string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{bin(ord(char)).replace("0b", "").zfill(16)}\n"
-            # Store the ASCII numerical representation of the char inside of $at
+        s = parts[2].strip("\"")
+        for i in range(len(s)):
+            char = s[i]
+            if char == "\\" and i < len(s) - 1 and s[i + 1] == "n": # newline char
+                string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{bin(10).replace("0b", "").zfill(16)}\n"
+            else:
+                string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{bin(ord(char)).replace("0b", "").zfill(16)}\n"
+                # Store the ASCII numerical representation of the char inside of $at
             string_instructions += f"101011{registers["$gp"]}{registers["$at"]}{bin(int(gp_offset)).replace("0b", "").zfill(16)}\n"
             # Store each individual char in a sequential area of memory
-            gp_offset += 1
+            gp_offset += 4
             current_line += 2
             # Store each char in the global data area using sw
         string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{"".zfill(16)}\n"
         string_instructions += f"101011{registers["$gp"]}{registers["$at"]}{bin(int(gp_offset)).replace("0b", "").zfill(16)}\n"
         # Null-terminate string
-        gp_offset += 1
+        gp_offset += 4
         current_line += 2
         return string_instructions
 
