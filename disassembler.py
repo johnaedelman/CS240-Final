@@ -25,7 +25,8 @@ op_codes = {
     "000000": "hit",
     "000000": "curse",
     "000000": "charge",
-    "111000": "absorb"
+    "111000": "absorb",
+    "000000": "syscall"
 }
 # dictionary for function codes (R-type only)
 func_codes = {
@@ -131,15 +132,23 @@ def bin_to_mips(line):
                     mips.append(
                         f"{func_codes[func_code]} {registers[rs]}, {registers[rt]}"
                     )
+
                     print(f"TEST: 2 register custom instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rs]} {registers[rt]}")
                
-                # single register instructions (mfhi, charge)
-                elif func_code in ["010000", "111001"]:
+                # single register instructions (mfhi)
+                elif func_code in ["010000"]:
                     rd = bit_string[16:21]
                     mips.append(
                         f"{func_codes[func_code]} {registers[rd]}"
                     )
                     print(f"TEST: single register instructions: {op_code} 00000 00000 {rd} 00000 {func_code} --> {func_codes[func_code]} {registers[rd]}")
+                
+                # for syscall
+                elif func_code == "001100":
+                    mips.append(
+                        f"{func_codes[func_code]}"
+                    )
+                    print(f"TEST: syscall instruction: {op_code} 00000 00000 00000 00000 {func_code}  --> {func_codes[func_code]}")
 
                 # other R-type instructions
                 else:
@@ -165,6 +174,7 @@ def bin_to_mips(line):
                         f"{op_codes[op_code]} {registers[rs]}, {int(offset, 2)}"
                     )
                 print(f"TEST: one register and immediate custom instruction: {op_code} {rs} 00000 {offset} --> {op_codes[op_code]} {registers[rs]}, {int(offset, 2)}")
+            
             # otherwise if lw or sw op-codes (I-type)
             elif op_code in ["100011", "101011"]:
                 # assign registers accordingly
@@ -230,8 +240,6 @@ def bin_to_mips(line):
         label_count += 1
     return mips
 
-# if __name__ == "__main__":
-    # handle_lines(sys.argv[1])
-
 
 handle_lines("disassembler_input.txt", "disassembler_output.asm")
+

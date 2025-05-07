@@ -38,6 +38,7 @@ standard_func_codes = {
     "and": "100100",
     "or": "100101",
     "slt": "101010",
+    "charge": "111001"
 }
 
 # Instructions that have func codes at the end, but do not match the form of add or sub
@@ -52,7 +53,6 @@ special_func_codes = {
     "boost": "100110",
     "hit": "011100",
     "curse": "010110",
-    "charge": "111001"
 }
 
 # all registers
@@ -103,7 +103,6 @@ def interpret_line(mips_f: str, bin_f: str):
         # call assemble() and write to output file
         bin = assemble(instruction)
         output_file.write(str(bin))  # cast to string
-
 
 # function to assemble
 def assemble(line):
@@ -266,8 +265,8 @@ def assemble(line):
                 parts[2].replace(",", ""),
             )
             current_line += 1
-            print(f"TESTING ROLL: {op_code} {rs} {immediate} --> {op_codes[op_code]} {registers[rs]} 00000 {to_signed_bin(int(immediate), 16)}")
-            return op_codes[op_code] + registers[rs] + "00000" + to_signed_bin(int(immediate), 16)
+            print(f"TESTING ROLL: {op_code} {rs} {immediate} --> {op_codes[op_code]} {registers[rs]} 00000 {to_signed_bin(int(immediate), 16)}\n")
+            return op_codes[op_code] + registers[rs] + "00000" + to_signed_bin(int(immediate), 16) + "\n"
             
 
         # for hurt and absorb
@@ -280,7 +279,7 @@ def assemble(line):
             )
             immediate = to_signed_bin(int(immediate), 16)
             current_line += 1
-            print(f"I-type custom instructions: {op_code} {rt} {rs} --> {op_codes[op_code]} {registers[rt]} {registers[rs]} {immediate}")
+            print(f"I-type custom instructions: {op_code} {rt} {rs} --> {op_codes[op_code]} {registers[rt]} {registers[rs]} {immediate}\n")
             return op_codes[op_code] + registers[rt] + registers[rs] + immediate + "\n"
         elif op_code == "j":
             offset = parts[1]
@@ -299,10 +298,10 @@ def assemble(line):
                 parts[2].replace(",", "")
             )
             current_line += 1
-            print(f"2 register instructions: {op_code} {rs} {rt} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} 00000 00000 {special_func_codes[op_code]}")
+            print(f"2 register instructions: {op_code} {rs} {rt} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} 00000 00000 {special_func_codes[op_code]}\n")
             return op_codes[op_code] + registers[rs] + registers[rt] + "0000000000" + special_func_codes[op_code] + "\n"
         # mfhi and charge
-        elif op_code in ["mfhi", "charge"]:
+        elif op_code in ["mfhi"]:
             rd = parts[1].replace(",", "")
             current_line += 1
             print(f"1 register instructions: {op_code} {rd} --> {op_codes[op_code]} 00000 00000 {registers[rd]} 00000 {special_func_codes[op_code]}")
@@ -349,7 +348,7 @@ def handle_labels(bin_filename: str):
 # python script running directly?
 if __name__ == "__main__":
     # open and interpret mips file
-    mips_file = "fizzbuzz.asm"    # "program1.mips"
+    mips_file = "boss_fight.txt"    # "program1.mips"
     binary_file = "assembler_output.txt"      # "mips_to_bin.txt"
     interpret_line(mips_file, binary_file)
     handle_labels(binary_file)
