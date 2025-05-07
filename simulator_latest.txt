@@ -1,71 +1,47 @@
-addi $at, $zero, 70
+addi $at, $zero, 32
 sw $at, 0($gp)
-addi $at, $zero, 105
+addi $at, $zero, 111
 sw $at, 4($gp)
-addi $at, $zero, 122
-sw $at, 8($gp)
-addi $at, $zero, 122
-sw $at, 12($gp)
-addi $at, $zero, 0
-sw $at, 16($gp)
-addi $at, $zero, 66
-sw $at, 20($gp)
 addi $at, $zero, 117
+sw $at, 8($gp)
+addi $at, $zero, 117
+sw $at, 12($gp)
+addi $at, $zero, 117
+sw $at, 16($gp)
+addi $at, $zero, 103
+sw $at, 20($gp)
+addi $at, $zero, 104
 sw $at, 24($gp)
-addi $at, $zero, 122
+addi $at, $zero, 104
 sw $at, 28($gp)
-addi $at, $zero, 122
+addi $at, $zero, 104
 sw $at, 32($gp)
-addi $at, $zero, 0
+addi $at, $zero, 104
 sw $at, 36($gp)
-addi $t0, $zero, 1
-addi $t1, $zero, 3
-addi $t2, $zero, 5
-label0:
-div $t0, $t1
-mfhi $t3
-beq $t3, $zero, label1
-div $t0, $t2
-mfhi $t3
-beq $t3, $zero, label2
+addi $at, $zero, 32
+sw $at, 40($gp)
+addi $at, $zero, 0
+sw $at, 44($gp)
+addi $t0, $zero, -4
+add $t0, $t0, $gp
+addi $t1, $zero, 5
+sw $t1, 0($t0)
+lw $t1, 0($t0)
+addi $t2, $zero, -1
+add $t1, $t1, $t2
+sw $t1, 0($t0)
+addi $t1, $zero, -8
+add $t1, $t1, $gp
+lw $t2, 0($t0)
+sw $t2, 0($t1)
 addi $v0, $zero, 1
-add $a0, $t0, $zero
+lw $t2, 0($t0)
+add $a0, $t2, $zero
 syscall
-addi $t0, $t0, 1
-addi $v0, $zero, 11
-addi $a0, $zero, 10
-syscall
-add $at, $zero, $t1
-slt $at, $at, $t0
-beq $at, $zero, label0
-addi $v0, $zero, 10
-syscall
-label1:
 addi $v0, $zero, 4
 addi $a0, $zero, 0
 syscall
-div $t0, $t2
-mfhi $t3
-beq $t3, $zero, label2
-addi $v0, $zero, 11
-addi $a0, $zero, 10
-syscall
-addi $t0, $t0, 1
-addi $at, $zero, 100
-slt $at, $at, $t0
-beq $at, $zero, label0
-addi $v0, $zero, 10
-syscall
-label2:
-addi $v0, $zero, 4
-addi $a0, $zero, 20
-syscall
-addi $v0, $zero, 11
-addi $a0, $zero, 10
-syscall
-addi $t0, $t0, 1
-addi $at, $zero, 100
-slt $at, $at, $t0
-beq $at, $zero, label0
-addi $v0, $zero, 10
+addi $v0, $zero, 1
+lw $t2, 0($t1)
+add $a0, $t2, $zero
 syscall

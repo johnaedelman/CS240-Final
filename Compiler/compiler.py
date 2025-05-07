@@ -303,4 +303,4 @@ def compile(c_file: str, mips_file: str):
 
 
 if __name__ == "__main__":
-    compile("fizzbuzz.c", "compiler_output.asm")
+    compile("compiler_input.c", "compiler_output.asm")

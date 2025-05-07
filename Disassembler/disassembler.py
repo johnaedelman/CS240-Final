@@ -76,6 +76,7 @@ registers = {
 
 labels = {}
 
+
 # open and read binary file
 def disassemble(bin_file: str, mips_file: str):
     input_file = open(bin_file, "r")
@@ -239,6 +240,6 @@ def bin_to_mips(line):
     return mips
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     disassemble("disassembler_input.txt", "disassembler_output.asm")
 

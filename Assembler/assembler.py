@@ -133,6 +133,10 @@ def assemble(line):
         strings[op_code.strip(":")] = str(gp_offset)
         string_instructions = ""
         s = parts[2].strip("\"")
+        if len(parts) > 3:
+            for i in range(3, len(parts)):
+                s += " " + parts[i].strip("\"")
+
         i = 0
         while i < len(s):
             char = s[i]

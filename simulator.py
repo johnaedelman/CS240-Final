@@ -186,7 +186,7 @@ def simulate(input_file, source_type="bin"):
         mips_file = open(default, "r")
     print("[SIMULATOR] New program simulation initializing.")
     handle_lines(mips_file.readlines())
-    print("[SIMULATOR] Program simulation executed successfully.")
+    print("\n[SIMULATOR] Program simulation executed successfully.")
 
 
 if __name__ == "__main__":
