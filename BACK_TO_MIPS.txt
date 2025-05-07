@@ -29,40 +29,40 @@ mfhi $t3
 beq $t3, $zero, 27
 addi $v0, $zero, 1
 add $a0, $t0, $zero
-syscall $zero, $zero, $zero
+syscall
 addi $t0, $t0, 1
 addi $v0, $zero, 11
 addi $a0, $zero, 10
-syscall $zero, $zero, $zero
+syscall
 addi $at, $zero, 99
 slt $at, $at, $t0
 beq $at, $zero, 65520
 addi $v0, $zero, 10
-syscall $zero, $zero, $zero
+syscall
 addi $v0, $zero, 4
 addi $a0, $zero, 0
-syscall $zero, $zero, $zero
+syscall
 div $t0, $t2
 mfhi $t3
 beq $t3, $zero, 9
 addi $v0, $zero, 11
 addi $a0, $zero, 10
-syscall $zero, $zero, $zero
+syscall
 addi $t0, $t0, 1
 addi $at, $zero, 100
 slt $at, $at, $t0
 beq $at, $zero, 65505
 addi $v0, $zero, 10
-syscall $zero, $zero, $zero
+syscall
 addi $v0, $zero, 4
 addi $a0, $zero, 5
-syscall $zero, $zero, $zero
+syscall
 addi $v0, $zero, 11
 addi $a0, $zero, 10
-syscall $zero, $zero, $zero
+syscall
 addi $t0, $t0, 1
 addi $at, $zero, 100
 slt $at, $at, $t0
 beq $at, $zero, 65493
 addi $v0, $zero, 10
-syscall $zero, $zero, $zero
+syscall

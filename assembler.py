@@ -104,7 +104,6 @@ def interpret_line(mips_f: str, bin_f: str):
         bin = assemble(instruction)
         output_file.write(str(bin))  # cast to string
 
-
 # function to assemble
 def assemble(line):
     global current_line, reading_strings, gp_offset
@@ -259,8 +258,8 @@ def assemble(line):
                 parts[2].replace(",", ""),
             )
             current_line += 1
-            print(f"TESTING ROLL: {op_code} {rs} {immediate} --> {op_codes[op_code]} {registers[rs]} 00000 {to_signed_bin(int(immediate), 16)}")
-            return op_codes[op_code] + registers[rs] + "00000" + to_signed_bin(int(immediate), 16)
+            print(f"TESTING ROLL: {op_code} {rs} {immediate} --> {op_codes[op_code]} {registers[rs]} 00000 {to_signed_bin(int(immediate), 16)}\n")
+            return op_codes[op_code] + registers[rs] + "00000" + to_signed_bin(int(immediate), 16) + "\n"
             
 
         # for hurt and absorb
@@ -292,7 +291,7 @@ def assemble(line):
                 parts[2].replace(",", "")
             )
             current_line += 1
-            print(f"2 register instructions: {op_code} {rs} {rt} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} 00000 00000 {special_func_codes[op_code]}")
+            print(f"2 register instructions: {op_code} {rs} {rt} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} 00000 00000 {special_func_codes[op_code]}\n")
             return op_codes[op_code] + registers[rs] + registers[rt] + "0000000000" + special_func_codes[op_code] + "\n"
         # mfhi and charge
         elif op_code in ["mfhi", "charge"]:
