@@ -105,6 +105,7 @@ def interpret_line(mips_f: str, bin_f: str):
         # call assemble() and write to output file
         bin = assemble(instruction)
         output_file.write(str(bin))  # cast to string
+    output_file.close()
 
 
 # function to assemble
@@ -356,6 +357,12 @@ def handle_labels(bin_filename: str):
 
 
 def assemble_and_label(mips_file: str, binary_file: str):
+    global current_line, reading_strings, gp_offset
+    current_line = 1
+    reading_strings = False
+    gp_offset = 0
+    labels.clear()
+    strings.clear()
     interpret_line(mips_file, binary_file)
     handle_labels(binary_file)
     print(f"[ASSEMBLER] Successfully assembled assembly input \"{mips_file}\" into binary output \"{binary_file}\".")

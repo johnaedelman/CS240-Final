@@ -82,14 +82,16 @@ def disassemble(bin_file: str, mips_file: str):
     input_file = open(bin_file, "r")
     # sort lines into list/ removes whitespace
     line = input_file.readlines()[0].strip()
+    input_file.close()
     mips_instructions = bin_to_mips(line) # convert
     # write to output file
     output_file = open(mips_file, "w")
     for instruction in mips_instructions:
         output_file.write(instruction)
         output_file.write("\n")
+    output_file.close()
     print(f"[DISASSEMBLER] Successfully disassembled binary input \"{bin_file}\" into assembly output \"{mips_file}\".")
-
+    labels.clear()
 
 def bin_to_dec(offset: str, num_bits: int):
     if offset.startswith("0"):

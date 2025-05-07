@@ -80,7 +80,7 @@ def initialize_for_loop(assignment, condition, update):
     output.append(f"endloop{loop_count}:\n")
     output.append(f"lw $t{tRegister}, 0({vars[assignment[1]]})\n")
     update = update.strip("{").strip(")")
-    if update == "i++":
+    if update.endswith("++"):
         output.append(f"addi $t{tRegister}, $t{tRegister}, 1\n")
     else:  # Supports for-loops with updates of the form i++ or i += a
         update = update.split(" ")
@@ -88,9 +88,9 @@ def initialize_for_loop(assignment, condition, update):
     output.append(f"sw $t{tRegister}, 0({vars[assignment[1]]})\n")
     condition = condition.split(" ")
     if condition[1] == "<=":
-        output.append(f"ble $t{tRegister}, {int(condition[2]) - 1}, loop{loop_count}\n")
+        output.append(f"ble $t{tRegister}, {int(condition[2])}, loop{loop_count}\n")
     elif condition[1] == "<":
-        output.append(f"ble $t{tRegister}, {condition[2]}, loop{loop_count}\n")
+        output.append(f"ble $t{tRegister}, {int(condition[2]) - 1}, loop{loop_count}\n")
     return output
 
 
@@ -161,10 +161,11 @@ def insert_string(string, op_lines):
 
 
 def compile(c_file: str, mips_file: str):
-    global conditional_count, conditional_tree_count, loop_count, loop_stack, loops, string_count
+    global conditional_count, conditional_tree_count, loop_count, loop_stack, loops, string_count, vars, tRegister, memoryOffset
     # open and read c file
     f = open(c_file, "r")
     lines = f.readlines()
+    f.close()
     output_lines = []
     end_offset = 0  # The offset from the end at which to insert new lines, used for loops and such
     for line in lines:
@@ -195,11 +196,12 @@ def compile(c_file: str, mips_file: str):
             end_offset += 5
             loop_count += 1
         elif line.strip().strip("{").strip("}").strip() == "else":
+            add_to_output(f"j endcond{conditional_tree_count - 1}\n", output_lines, end_offset + 1)
             conditional_stack.insert(0, "else")
             conditionals["else"] = 1
         elif "if" in line:
             if line.strip("}").strip().startswith("else"):
-                add_to_output(f"j endcond{conditional_tree_count - 1}\n", output_lines, end_offset + 1)  # Temp & only works if the ifs are within a loop, try to fix it
+                add_to_output(f"j endcond{conditional_tree_count - 1}\n", output_lines, end_offset + 1)
             else:
                 add_to_output(f"endcond{conditional_tree_count}:\n", output_lines, end_offset)
                 conditional_tree_count += 1
@@ -298,8 +300,15 @@ def compile(c_file: str, mips_file: str):
     # write output to output file
     output_file = open(mips_file, "w")
     output_file.writelines(output_lines)
+    output_file.close()
     # [print(line, end="") for line in output_lines]
     print(f"[COMPILER] Successfully compiled C input \"{c_file}\" into assembly output \"{mips_file}\".")
+    conditional_count, conditional_tree_count, loop_count, string_count, tRegister, memoryOffset = 0, 0, 0, 0, 0, -4
+    loop_stack.clear()
+    loops.clear()
+    conditionals.clear()
+    conditional_stack.clear()
+    vars.clear()
 
 
 if __name__ == "__main__":

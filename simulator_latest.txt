@@ -1,47 +1,328 @@
-addi $at, $zero, 32
+addi $at, $zero, 67
 sw $at, 0($gp)
 addi $at, $zero, 111
 sw $at, 4($gp)
-addi $at, $zero, 117
+addi $at, $zero, 110
 sw $at, 8($gp)
-addi $at, $zero, 117
-sw $at, 12($gp)
-addi $at, $zero, 117
-sw $at, 16($gp)
 addi $at, $zero, 103
+sw $at, 12($gp)
+addi $at, $zero, 114
+sw $at, 16($gp)
+addi $at, $zero, 97
 sw $at, 20($gp)
-addi $at, $zero, 104
+addi $at, $zero, 116
 sw $at, 24($gp)
-addi $at, $zero, 104
+addi $at, $zero, 117
 sw $at, 28($gp)
-addi $at, $zero, 104
+addi $at, $zero, 108
 sw $at, 32($gp)
-addi $at, $zero, 104
+addi $at, $zero, 97
 sw $at, 36($gp)
-addi $at, $zero, 32
+addi $at, $zero, 116
 sw $at, 40($gp)
-addi $at, $zero, 0
+addi $at, $zero, 105
 sw $at, 44($gp)
+addi $at, $zero, 111
+sw $at, 48($gp)
+addi $at, $zero, 110
+sw $at, 52($gp)
+addi $at, $zero, 115
+sw $at, 56($gp)
+addi $at, $zero, 33
+sw $at, 60($gp)
+addi $at, $zero, 32
+sw $at, 64($gp)
+addi $at, $zero, 89
+sw $at, 68($gp)
+addi $at, $zero, 111
+sw $at, 72($gp)
+addi $at, $zero, 117
+sw $at, 76($gp)
+addi $at, $zero, 32
+sw $at, 80($gp)
+addi $at, $zero, 98
+sw $at, 84($gp)
+addi $at, $zero, 101
+sw $at, 88($gp)
+addi $at, $zero, 97
+sw $at, 92($gp)
+addi $at, $zero, 116
+sw $at, 96($gp)
+addi $at, $zero, 32
+sw $at, 100($gp)
+addi $at, $zero, 116
+sw $at, 104($gp)
+addi $at, $zero, 104
+sw $at, 108($gp)
+addi $at, $zero, 101
+sw $at, 112($gp)
+addi $at, $zero, 32
+sw $at, 116($gp)
+addi $at, $zero, 102
+sw $at, 120($gp)
+addi $at, $zero, 105
+sw $at, 124($gp)
+addi $at, $zero, 110
+sw $at, 128($gp)
+addi $at, $zero, 97
+sw $at, 132($gp)
+addi $at, $zero, 108
+sw $at, 136($gp)
+addi $at, $zero, 32
+sw $at, 140($gp)
+addi $at, $zero, 98
+sw $at, 144($gp)
+addi $at, $zero, 111
+sw $at, 148($gp)
+addi $at, $zero, 115
+sw $at, 152($gp)
+addi $at, $zero, 115
+sw $at, 156($gp)
+addi $at, $zero, 33
+sw $at, 160($gp)
+addi $at, $zero, 32
+sw $at, 164($gp)
+addi $at, $zero, 71
+sw $at, 168($gp)
+addi $at, $zero, 101
+sw $at, 172($gp)
+addi $at, $zero, 116
+sw $at, 176($gp)
+addi $at, $zero, 32
+sw $at, 180($gp)
+addi $at, $zero, 116
+sw $at, 184($gp)
+addi $at, $zero, 104
+sw $at, 188($gp)
+addi $at, $zero, 105
+sw $at, 192($gp)
+addi $at, $zero, 115
+sw $at, 196($gp)
+addi $at, $zero, 32
+sw $at, 200($gp)
+addi $at, $zero, 109
+sw $at, 204($gp)
+addi $at, $zero, 97
+sw $at, 208($gp)
+addi $at, $zero, 110
+sw $at, 212($gp)
+addi $at, $zero, 32
+sw $at, 216($gp)
+addi $at, $zero, 97
+sw $at, 220($gp)
+addi $at, $zero, 32
+sw $at, 224($gp)
+addi $at, $zero, 77
+sw $at, 228($gp)
+addi $at, $zero, 121
+sw $at, 232($gp)
+addi $at, $zero, 116
+sw $at, 236($gp)
+addi $at, $zero, 104
+sw $at, 240($gp)
+addi $at, $zero, 105
+sw $at, 244($gp)
+addi $at, $zero, 99
+sw $at, 248($gp)
+addi $at, $zero, 97
+sw $at, 252($gp)
+addi $at, $zero, 108
+sw $at, 256($gp)
+addi $at, $zero, 32
+sw $at, 260($gp)
+addi $at, $zero, 76
+sw $at, 264($gp)
+addi $at, $zero, 97
+sw $at, 268($gp)
+addi $at, $zero, 115
+sw $at, 272($gp)
+addi $at, $zero, 116
+sw $at, 276($gp)
+addi $at, $zero, 32
+sw $at, 280($gp)
+addi $at, $zero, 80
+sw $at, 284($gp)
+addi $at, $zero, 114
+sw $at, 288($gp)
+addi $at, $zero, 105
+sw $at, 292($gp)
+addi $at, $zero, 115
+sw $at, 296($gp)
+addi $at, $zero, 109
+sw $at, 300($gp)
+addi $at, $zero, 46
+sw $at, 304($gp)
+addi $at, $zero, 10
+sw $at, 308($gp)
+addi $at, $zero, 0
+sw $at, 312($gp)
+addi $at, $zero, 32
+sw $at, 316($gp)
+addi $at, $zero, 98
+sw $at, 320($gp)
+addi $at, $zero, 111
+sw $at, 324($gp)
+addi $at, $zero, 115
+sw $at, 328($gp)
+addi $at, $zero, 115
+sw $at, 332($gp)
+addi $at, $zero, 101
+sw $at, 336($gp)
+addi $at, $zero, 115
+sw $at, 340($gp)
+addi $at, $zero, 46
+sw $at, 344($gp)
+addi $at, $zero, 10
+sw $at, 348($gp)
+addi $at, $zero, 0
+sw $at, 352($gp)
+addi $at, $zero, 89
+sw $at, 356($gp)
+addi $at, $zero, 111
+sw $at, 360($gp)
+addi $at, $zero, 117
+sw $at, 364($gp)
+addi $at, $zero, 32
+sw $at, 368($gp)
+addi $at, $zero, 98
+sw $at, 372($gp)
+addi $at, $zero, 101
+sw $at, 376($gp)
+addi $at, $zero, 97
+sw $at, 380($gp)
+addi $at, $zero, 116
+sw $at, 384($gp)
+addi $at, $zero, 32
+sw $at, 388($gp)
+addi $at, $zero, 97
+sw $at, 392($gp)
+addi $at, $zero, 32
+sw $at, 396($gp)
+addi $at, $zero, 98
+sw $at, 400($gp)
+addi $at, $zero, 111
+sw $at, 404($gp)
+addi $at, $zero, 115
+sw $at, 408($gp)
+addi $at, $zero, 115
+sw $at, 412($gp)
+addi $at, $zero, 33
+sw $at, 416($gp)
+addi $at, $zero, 32
+sw $at, 420($gp)
+addi $at, $zero, 89
+sw $at, 424($gp)
+addi $at, $zero, 111
+sw $at, 428($gp)
+addi $at, $zero, 117
+sw $at, 432($gp)
+addi $at, $zero, 39
+sw $at, 436($gp)
+addi $at, $zero, 118
+sw $at, 440($gp)
+addi $at, $zero, 101
+sw $at, 444($gp)
+addi $at, $zero, 32
+sw $at, 448($gp)
+addi $at, $zero, 98
+sw $at, 452($gp)
+addi $at, $zero, 101
+sw $at, 456($gp)
+addi $at, $zero, 97
+sw $at, 460($gp)
+addi $at, $zero, 116
+sw $at, 464($gp)
+addi $at, $zero, 101
+sw $at, 468($gp)
+addi $at, $zero, 110
+sw $at, 472($gp)
+addi $at, $zero, 32
+sw $at, 476($gp)
+addi $at, $zero, 0
+sw $at, 480($gp)
+addi $at, $zero, 10
+sw $at, 484($gp)
+addi $at, $zero, 0
+sw $at, 488($gp)
+addi $at, $zero, 72
+sw $at, 492($gp)
+addi $at, $zero, 111
+sw $at, 496($gp)
+addi $at, $zero, 117
+sw $at, 500($gp)
+addi $at, $zero, 114
+sw $at, 504($gp)
+addi $at, $zero, 115
+sw $at, 508($gp)
+addi $at, $zero, 32
+sw $at, 512($gp)
+addi $at, $zero, 112
+sw $at, 516($gp)
+addi $at, $zero, 108
+sw $at, 520($gp)
+addi $at, $zero, 97
+sw $at, 524($gp)
+addi $at, $zero, 121
+sw $at, 528($gp)
+addi $at, $zero, 101
+sw $at, 532($gp)
+addi $at, $zero, 100
+sw $at, 536($gp)
+addi $at, $zero, 58
+sw $at, 540($gp)
+addi $at, $zero, 32
+sw $at, 544($gp)
+addi $at, $zero, 0
+sw $at, 548($gp)
 addi $t0, $zero, -4
 add $t0, $t0, $gp
-addi $t1, $zero, 5
-sw $t1, 0($t0)
-lw $t1, 0($t0)
-addi $t2, $zero, -1
-add $t1, $t1, $t2
+addi $t1, $zero, 0
 sw $t1, 0($t0)
 addi $t1, $zero, -8
 add $t1, $t1, $gp
-lw $t2, 0($t0)
+addi $t2, $zero, 1
 sw $t2, 0($t1)
-addi $v0, $zero, 1
-lw $t2, 0($t0)
-add $a0, $t2, $zero
-syscall
+label0:
 addi $v0, $zero, 4
-addi $a0, $zero, 0
+addi $a0, $zero, 492
 syscall
 addi $v0, $zero, 1
 lw $t2, 0($t1)
 add $a0, $t2, $zero
 syscall
+addi $v0, $zero, 4
+addi $a0, $zero, 484
+syscall
+addi $t2, $zero, 8
+lw $t3, 0($t1)
+div $t3, $t2
+mfhi $t2
+addi $t3, $zero, 0
+bne $t2, $t3, label1
+lw $t2, 0($t0)
+addi $t3, $zero, 1
+add $t2, $t2, $t3
+sw $t2, 0($t0)
+addi $v0, $zero, 4
+addi $a0, $zero, 356
+syscall
+addi $v0, $zero, 1
+lw $t2, 0($t0)
+add $a0, $t2, $zero
+syscall
+addi $v0, $zero, 4
+addi $a0, $zero, 316
+syscall
+lw $t2, 0($t0)
+addi $t3, $zero, 17
+bne $t2, $t3, label1
+addi $v0, $zero, 4
+addi $a0, $zero, 0
+syscall
+label1:
+lw $t2, 0($t1)
+addi $t2, $t2, 1
+sw $t2, 0($t1)
+addi $at, $zero, 140
+slt $at, $at, $t2
+beq $at, $zero, label0

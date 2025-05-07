@@ -1,3 +1,5 @@
+from idlelib.window import registry
+
 from Assembler.assembler import assemble_and_label
 from Disassembler.disassembler import disassemble
 from Compiler.compiler import compile
@@ -136,12 +138,16 @@ def handle_lines(lines: list[str]):
             print(f"You revived! Your health recovered to {registers[rd]}/{registers[rs]}.")
         elif instruction == "heal":
             rd, rs = line[1], line[2]
-            registers[rd] = registers[rd] + 150
+            if registers[rd] + 150 > 400:
+                registers[rd] = 400
+            else:
+                registers[rd] = registers[rd] + 150
             registers[rs] = 60
             print(f"Drank a health potion! Your health recovered to {registers[rd]} and you gained 60 seconds of potion sickness.")
         elif instruction == "roll":
             rd, immediate = line[1], line[2]
             registers[rd] = randint(0, int(immediate))
+            print(f"Rolled a {registers[rd]}.")
         elif instruction == "boost":
             rd, rs = line[1], line[2]
             registers[rd] = pow(registers[rd], registers[rs])
@@ -187,11 +193,14 @@ def simulate(input_file, source_type="bin"):
     print("[SIMULATOR] New program simulation initializing.")
     handle_lines(mips_file.readlines())
     print("\n[SIMULATOR] Program simulation executed successfully.")
+    mips_file.close()
 
 
 if __name__ == "__main__":
     while True:
         check = input("Would you like to compile, assemble, disassemble, simulate, or exit?\n")
+        in_file = ""
+        out_file = ""
         check = check.strip().casefold()
         if check == "compile" or check == "c":
             in_file = input("Specify a C input file path.\n")
