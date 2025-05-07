@@ -1,68 +1,15 @@
-addi $at, $zero, 70
-sw $at, 0($gp)
-addi $at, $zero, 105
-sw $at, 1($gp)
-addi $at, $zero, 122
-sw $at, 2($gp)
-addi $at, $zero, 122
-sw $at, 3($gp)
-addi $at, $zero, 0
-sw $at, 4($gp)
-addi $at, $zero, 66
-sw $at, 5($gp)
-addi $at, $zero, 117
-sw $at, 6($gp)
-addi $at, $zero, 122
-sw $at, 7($gp)
-addi $at, $zero, 122
-sw $at, 8($gp)
-addi $at, $zero, 0
-sw $at, 9($gp)
-addi $t0, $zero, 1
-addi $t1, $zero, 3
-addi $t2, $zero, 5
-div $t0, $t1
-mfhi $t3
-beq $t3, $zero, 15
-div $t0, $t2
-mfhi $t3
-beq $t3, $zero, 27
-addi $v0, $zero, 1
-add $a0, $t0, $zero
-syscall
-addi $t0, $t0, 1
-addi $v0, $zero, 11
-addi $a0, $zero, 10
-syscall
-addi $at, $zero, 99
-slt $at, $at, $t0
-beq $at, $zero, 65520
-addi $v0, $zero, 10
-syscall
-addi $v0, $zero, 4
-addi $a0, $zero, 0
-syscall
-div $t0, $t2
-mfhi $t3
-beq $t3, $zero, 9
-addi $v0, $zero, 11
-addi $a0, $zero, 10
-syscall
-addi $t0, $t0, 1
-addi $at, $zero, 100
-slt $at, $at, $t0
-beq $at, $zero, 65505
-addi $v0, $zero, 10
-syscall
-addi $v0, $zero, 4
-addi $a0, $zero, 5
-syscall
-addi $v0, $zero, 11
-addi $a0, $zero, 10
-syscall
-addi $t0, $t0, 1
-addi $at, $zero, 100
-slt $at, $at, $t0
-beq $at, $zero, 65493
-addi $v0, $zero, 10
-syscall
+boost $t0, $t3
+charge $t0, $t1, $t2
+hit $t1, $t4
+hurt $t0, $t3, 100
+hurt $t0, $t3, 50
+heal $t0, $t3
+hit $t1, $t4
+curse $t0, $t3
+kill $t0, $t3
+revive $t0, $t3
+boost $t0, $t3
+hit $t1, $t4
+absorb $t0, $t4, 5
+curse $t0, $t3
+kill $t0, $t3

@@ -126,8 +126,8 @@ def bin_to_mips(line):
 
                     print(f"TEST: 2 register custom instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rs]} {registers[rt]}")
                
-                # single register instructions (mfhi, charge)
-                elif func_code in ["010000", "111001"]:
+                # single register instructions (mfhi)
+                elif func_code in ["010000"]:
                     rd = bit_string[16:21]
                     mips.append(
                         f"{func_codes[func_code]} {registers[rd]}"
@@ -204,4 +204,4 @@ def bin_to_mips(line):
 # if __name__ == "__main__":
     # handle_lines(sys.argv[1])
 
-handle_lines("custom_machine_code.txt", "BACK_TO_MIPS.txt")
+handle_lines("assembler_output.txt", "BACK_TO_MIPS.txt")
