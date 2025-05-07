@@ -96,13 +96,16 @@ gp_offset = 0
 def interpret_line(mips_f: str, bin_f: str):
     # open input file (readable)
     input_file = open(mips_f, "r")
+    lines = input_file.readlines()
+    input_file.close()
     # open output file (writable)
     output_file = open(bin_f, "w")
     # reads input file line by line
-    for instruction in input_file:
+    for instruction in lines:
         # call assemble() and write to output file
         bin = assemble(instruction)
         output_file.write(str(bin))  # cast to string
+
 
 # function to assemble
 def assemble(line):
@@ -130,10 +133,12 @@ def assemble(line):
         strings[op_code.strip(":")] = str(gp_offset)
         string_instructions = ""
         s = parts[2].strip("\"")
-        for i in range(len(s)):
+        i = 0
+        while i < len(s):
             char = s[i]
             if char == "\\" and i < len(s) - 1 and s[i + 1] == "n": # newline char
                 string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{bin(10).replace("0b", "").zfill(16)}\n"
+                i += 1
             else:
                 string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{bin(ord(char)).replace("0b", "").zfill(16)}\n"
                 # Store the ASCII numerical representation of the char inside of $at
@@ -141,6 +146,7 @@ def assemble(line):
             # Store each individual char in a sequential area of memory
             gp_offset += 4
             current_line += 2
+            i += 1
             # Store each char in the global data area using sw
         string_instructions += f"001000{registers["$zero"]}{registers["$at"]}{"".zfill(16)}\n"
         string_instructions += f"101011{registers["$gp"]}{registers["$at"]}{bin(int(gp_offset)).replace("0b", "").zfill(16)}\n"
@@ -265,7 +271,7 @@ def assemble(line):
                 parts[2].replace(",", ""),
             )
             current_line += 1
-            print(f"TESTING ROLL: {op_code} {rs} {immediate} --> {op_codes[op_code]} {registers[rs]} 00000 {to_signed_bin(int(immediate), 16)}\n")
+            # print(f"TESTING ROLL: {op_code} {rs} {immediate} --> {op_codes[op_code]} {registers[rs]} 00000 {to_signed_bin(int(immediate), 16)}\n")
             return op_codes[op_code] + registers[rs] + "00000" + to_signed_bin(int(immediate), 16) + "\n"
             
 
@@ -279,7 +285,7 @@ def assemble(line):
             )
             immediate = to_signed_bin(int(immediate), 16)
             current_line += 1
-            print(f"I-type custom instructions: {op_code} {rt} {rs} --> {op_codes[op_code]} {registers[rt]} {registers[rs]} {immediate}\n")
+            # print(f"I-type custom instructions: {op_code} {rt} {rs} --> {op_codes[op_code]} {registers[rt]} {registers[rs]} {immediate}\n")
             return op_codes[op_code] + registers[rt] + registers[rs] + immediate + "\n"
         elif op_code == "j":
             offset = parts[1]
@@ -298,13 +304,13 @@ def assemble(line):
                 parts[2].replace(",", "")
             )
             current_line += 1
-            print(f"2 register instructions: {op_code} {rs} {rt} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} 00000 00000 {special_func_codes[op_code]}\n")
+            # print(f"2 register instructions: {op_code} {rs} {rt} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} 00000 00000 {special_func_codes[op_code]}\n")
             return op_codes[op_code] + registers[rs] + registers[rt] + "0000000000" + special_func_codes[op_code] + "\n"
         # mfhi and charge
         elif op_code in ["mfhi"]:
             rd = parts[1].replace(",", "")
             current_line += 1
-            print(f"1 register instructions: {op_code} {rd} --> {op_codes[op_code]} 00000 00000 {registers[rd]} 00000 {special_func_codes[op_code]}")
+            # print(f"1 register instructions: {op_code} {rd} --> {op_codes[op_code]} 00000 00000 {registers[rd]} 00000 {special_func_codes[op_code]}")
             return op_codes[op_code] + "0000000000" + registers[rd] + "00000" + special_func_codes[op_code] + "\n"
         elif op_code == "syscall":
             current_line += 1
@@ -320,7 +326,7 @@ def to_signed_bin(num, num_bits):  # Converts an int to a signed two's complemen
 def handle_labels(bin_filename: str):
     bin_file = open(bin_filename, "r")
     lines = bin_file.read()
-    print(lines)
+    # print(lines)
     bin_file.close()
     lines = lines.split("\n")
     if "" in lines:
@@ -345,10 +351,14 @@ def handle_labels(bin_filename: str):
     bin_file.close()
 
 
+def assemble_and_label(mips_file: str, binary_file: str):
+    interpret_line(mips_file, binary_file)
+    handle_labels(binary_file)
+    print(f"[ASSEMBLER] Successfully assembled assembly input \"{mips_file}\" into binary output \"{binary_file}\".")
+
+
 # python script running directly?
 if __name__ == "__main__":
     # open and interpret mips file
-    mips_file = "boss_fight.txt"    # "program1.mips"
-    binary_file = "assembler_output.txt"      # "mips_to_bin.txt"
-    interpret_line(mips_file, binary_file)
-    handle_labels(binary_file)
+    assemble_and_label("assembler_input.asm", "assembler_output.txt")
+

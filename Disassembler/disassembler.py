@@ -77,7 +77,7 @@ registers = {
 labels = {}
 
 # open and read binary file
-def handle_lines(bin_file: str, mips_file: str):
+def disassemble(bin_file: str, mips_file: str):
     input_file = open(bin_file, "r")
     # sort lines into list/ removes whitespace
     line = input_file.readlines()[0].strip()
@@ -87,6 +87,7 @@ def handle_lines(bin_file: str, mips_file: str):
     for instruction in mips_instructions:
         output_file.write(instruction)
         output_file.write("\n")
+    print(f"[DISASSEMBLER] Successfully disassembled binary input \"{bin_file}\" into assembly output \"{mips_file}\".")
 
 
 def bin_to_dec(offset: str, num_bits: int):
@@ -121,7 +122,7 @@ def bin_to_mips(line):
                     mips.append(
                         f"{func_codes[func_code]} {registers[rs]}, {registers[rt]}"
                     )
-                    print(f"TEST: div instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rs]} {registers[rt]}")
+                    # print(f"TEST: div instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rs]} {registers[rt]}")
                 
                 # custom instructions with 2 registers --> kill, revive, heal, boost, curse, hit
                 elif func_code in ["101110", "111010", "111100", "100110", "010110", "011100"]:
@@ -133,7 +134,7 @@ def bin_to_mips(line):
                         f"{func_codes[func_code]} {registers[rs]}, {registers[rt]}"
                     )
 
-                    print(f"TEST: 2 register custom instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rs]} {registers[rt]}")
+                    # print(f"TEST: 2 register custom instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rs]} {registers[rt]}")
                
                 # single register instructions (mfhi)
                 elif func_code in ["010000"]:
@@ -141,14 +142,14 @@ def bin_to_mips(line):
                     mips.append(
                         f"{func_codes[func_code]} {registers[rd]}"
                     )
-                    print(f"TEST: single register instructions: {op_code} 00000 00000 {rd} 00000 {func_code} --> {func_codes[func_code]} {registers[rd]}")
+                    # print(f"TEST: single register instructions: {op_code} 00000 00000 {rd} 00000 {func_code} --> {func_codes[func_code]} {registers[rd]}")
                 
                 # for syscall
                 elif func_code == "001100":
                     mips.append(
                         f"{func_codes[func_code]}"
                     )
-                    print(f"TEST: syscall instruction: {op_code} 00000 00000 00000 00000 {func_code}  --> {func_codes[func_code]}")
+                    # print(f"TEST: syscall instruction: {op_code} 00000 00000 00000 00000 {func_code}  --> {func_codes[func_code]}")
 
                 # other R-type instructions
                 else:
@@ -164,7 +165,7 @@ def bin_to_mips(line):
                     mips.append(
                         f"{func_codes[func_code]} {registers[rd]}, {registers[rs]}, {registers[rt]}"
                     )
-                    print(f"TEST: other R-type instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rd]} {registers[rs]} {registers[rt]} ")
+                    # print(f"TEST: other R-type instructions: {op_code} {rs} {rt} {rd} {shift} {func_code} --> {func_codes[func_code]} {registers[rd]} {registers[rs]} {registers[rt]} ")
 
             # for roll/absorb instruction (one register, one immediate)
             elif op_code == "111110":
@@ -173,7 +174,7 @@ def bin_to_mips(line):
                 mips.append(
                         f"{op_codes[op_code]} {registers[rs]}, {int(offset, 2)}"
                     )
-                print(f"TEST: one register and immediate custom instruction: {op_code} {rs} 00000 {offset} --> {op_codes[op_code]} {registers[rs]}, {int(offset, 2)}")
+                # print(f"TEST: one register and immediate custom instruction: {op_code} {rs} 00000 {offset} --> {op_codes[op_code]} {registers[rs]}, {int(offset, 2)}")
             
             # otherwise if lw or sw op-codes (I-type)
             elif op_code in ["100011", "101011"]:
@@ -183,7 +184,7 @@ def bin_to_mips(line):
                 mips.append(
                     f"{op_codes[op_code]} {registers[rt]}, {int(offset, 2)}({registers[rs]})"
                 )
-                print(f"TEST: lw or sw instructions: {op_code} {rs} {offset} {rt} --> {op_codes[op_code]} {registers[rt]}, {int(offset, 2)}({registers[rs]})")
+                # print(f"TEST: lw or sw instructions: {op_code} {rs} {offset} {rt} --> {op_codes[op_code]} {registers[rt]}, {int(offset, 2)}({registers[rs]})")
             # j-type instructions: | opcode (6 bits) | target (26 bits) |
             elif op_code == "000010":
                 offset = bit_string[6:]
@@ -191,7 +192,7 @@ def bin_to_mips(line):
                     f"{op_codes[op_code]} {bin_to_dec(offset, 26)}"
                 )
                 offsets[line_count] = bin_to_dec(offset, 26)
-                print(f"TEST: jump instructions: {op_code} {offset} --> {op_codes[op_code]} (target address)")
+                # print(f"TEST: jump instructions: {op_code} {offset} --> {op_codes[op_code]} (target address)")
 
             # check for beq and blt
             elif op_code in ["000100", "000101"]:
@@ -200,17 +201,16 @@ def bin_to_mips(line):
                     f"{op_codes[op_code]} {registers[rs]}, {registers[rt]}, {bin_to_dec(offset, 16)}"
                 )
                 offsets[line_count] = bin_to_dec(offset, 16)
-                print(f"TEST: beq instructions: {op_code} {rs} {rt} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} (target address)")
+                # print(f"TEST: beq instructions: {op_code} {rs} {rt} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} (target address)")
 
             else: # I-type instructions for others like addi
                 rt, rs, offset = bit_string[6:11], bit_string[11:16], bit_string[16:32]
                 mips.append(
                     f"{op_codes[op_code]} {registers[rs]}, {registers[rt]}, {bin_to_dec(offset, 16)}"
                 )
-                print(f"TEST: Other I-type instructions: {op_code} {rt} {rs} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} {int(offset, 2)}")
+                # print(f"TEST: Other I-type instructions: {op_code} {rt} {rs} {offset} --> {op_codes[op_code]} {registers[rs]} {registers[rt]} {int(offset, 2)}")
             
             bit_string = ""
-    print(offsets)
     label_count = 0
     insert_indices = {}
     for o in offsets:
@@ -221,8 +221,6 @@ def bin_to_mips(line):
             insert_indices[index].append(o - 1)
     insert_lines = list(insert_indices.keys())
     insert_lines.sort()
-    print(insert_lines)
-    print(insert_indices)
     for i in insert_lines:
         for line in insert_indices[i]:
             parts = mips[line].split(" ")
@@ -241,5 +239,6 @@ def bin_to_mips(line):
     return mips
 
 
-handle_lines("disassembler_input.txt", "disassembler_output.asm")
+if __name__ == "main":
+    disassemble("disassembler_input.txt", "disassembler_output.asm")
 
