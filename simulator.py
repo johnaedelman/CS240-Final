@@ -51,7 +51,6 @@ def handle_lines(lines: list[str]):
         for x in range(len(line)):
             line[x] = line[x].strip(",")
         instruction = line[0]
-
         # Math/bitwise operations
         if instruction == "addi":
             rd, rs, immediate = line[1], line[2], line[3]
@@ -179,7 +178,7 @@ def simulate(input_file, source_type="bin"):
     elif source_type == "asm":
         assemble_and_label(input_file, default)
         disassemble(default, default)
-        mips_file = open(input_file, "r")
+        mips_file = open(default, "r")
     elif source_type == "c":
         compile(input_file, default)
         assemble_and_label(default, default)
